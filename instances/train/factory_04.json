@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "id": "factory_train_04",
+  "units": {
+    "flow": "Mbps",
+    "latency": "ms",
+    "compute": "vCPU"
+  },
+  "description": "Illustrative industrial campus: gateways, edge servers, network core and cloud. Synthetic, not operator data.",
+  "nodes": [
+    {
+      "id": "gateway_north",
+      "cpu": 0
+    },
+    {
+      "id": "gateway_south",
+      "cpu": 0
+    },
+    {
+      "id": "edge_north",
+      "cpu": 9
+    },
+    {
+      "id": "edge_south",
+      "cpu": 9
+    },
+    {
+      "id": "core_switch",
+      "cpu": 0
+    },
+    {
+      "id": "cloud_dc",
+      "cpu": 24
+    }
+  ],
+  "links": [
+    {
+      "source": "gateway_north",
+      "target": "edge_north",
+      "capacity_mbps": 10,
+      "latency_base_ms": 1.4,
+      "latency_per_mbps_ms": 0.18
+    },
+    {
+      "source": "gateway_north",
+      "target": "edge_south",
+      "capacity_mbps": 8,
+      "latency_base_ms": 2.6,
+      "latency_per_mbps_ms": 0.22
+    },
+    {
+      "source": "gateway_south",
+      "target": "edge_north",
+      "capacity_mbps": 8,
+      "latency_base_ms": 2.6,
+      "latency_per_mbps_ms": 0.22
+    },
+    {
+      "source": "gateway_south",
+      "target": "edge_south",
+      "capacity_mbps": 10,
+      "latency_base_ms": 1.4,
+      "latency_per_mbps_ms": 0.18
+    },
+    {
+      "source": "edge_north",
+      "target": "core_switch",
+      "capacity_mbps": 13,
+      "latency_base_ms": 3,
+      "latency_per_mbps_ms": 0.1
+    },
+    {
+      "source": "edge_south",
+      "target": "core_switch",
+      "capacity_mbps": 13,
+      "latency_base_ms": 3,
+      "latency_per_mbps_ms": 0.1
+    },
+    {
+      "source": "core_switch",
+      "target": "cloud_dc",
+      "capacity_mbps": 18,
+      "latency_base_ms": 6,
+      "latency_per_mbps_ms": 0.08
+    }
+  ],
+  "services": [
+    {
+      "id": "video_analytics",
+      "cpu": 6,
+      "demands": [
+        {
+          "id": "camera_north",
+          "origin": "gateway_north",
+          "min_mbps": 1,
+          "max_mbps": 6,
+          "max_latency_ms": 9
+        },
+        {
+          "id": "camera_south",
+          "origin": "gateway_south",
+          "min_mbps": 1,
+          "max_mbps": 6,
+          "max_latency_ms": 9
+        }
+      ]
+    },
+    {
+      "id": "machine_telemetry",
+      "cpu": 4,
+      "demands": [
+        {
+          "id": "sensors_north",
+          "origin": "gateway_north",
+          "min_mbps": 1,
+          "max_mbps": 3,
+          "max_latency_ms": 11
+        },
+        {
+          "id": "sensors_south",
+          "origin": "gateway_south",
+          "min_mbps": 1,
+          "max_mbps": 4,
+          "max_latency_ms": 11
+        }
+      ]
+    }
+  ]
+}
