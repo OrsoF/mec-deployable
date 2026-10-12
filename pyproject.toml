@@ -3,17 +3,16 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mec-network-ppo"
+name = "network-ppo"
 version = "0.1.0"
-description = "End-to-end PPO placement, routing and traffic orchestration MVP"
+description = "Standalone PPO industrial network placement, routing and Mbps allocation"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}
 dependencies = [
-  "numpy>=1.24,<3",
-  "networkx>=2.8,<4",
-  "gymnasium>=0.29,<2",
-  "stable-baselines3>=2.2,<3",
-  "torch>=2,<3",
+    "numpy>=1.24,<3",
+    "networkx>=2.8,<4",
+    "gymnasium>=0.29,<2",
+    "stable-baselines3>=2.2,<3",
 ]
 
 [project.optional-dependencies]
@@ -21,7 +20,7 @@ test = ["pytest>=7"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["mecbench*", "mec_ppo*"]
+include = ["network_ppo*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
