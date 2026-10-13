@@ -17,6 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=7"]
+notebook = ["matplotlib>=3.7,<4", "jupyterlab>=4,<5"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

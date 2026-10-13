@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "figures": [
+    "network.png",
+    "decision_network.png",
+    "efficiency.png"
+  ],
+  "methods": [
+    "minimum-Mbps feasible seed",
+    "greedy uplift with fixed placement/routes"
+  ],
+  "ppo_in_readme_figures": false,
+  "paths": 3,
+  "units": {
+    "flow": "Mbps",
+    "compute": "vCPU",
+    "latency": "ms"
+  },
+  "source_sha256": {
+    "instances/train/factory_00.json": "a952883dbdcc19794560d33ddb68cbc0cbe319dc13b0a149725f1abfd5fdc89f",
+    "instances/train/factory_01.json": "7f653bfe3d0957a6381b0123162f062a08cbd5494dd0d35489022b448a3c7fc1",
+    "instances/train/factory_02.json": "a07d4a6c4a6a64a8d83cba341d567a812368a79fe2a8e014d6adf4b6402e9461",
+    "instances/train/factory_03.json": "be6ccbe6c89d50144279ba3d2afca59c39bcfd047608345a9f6e44f021724d03",
+    "instances/train/factory_04.json": "05638e25dc178583bcf5ce46416d4cff9cebb9db5200e37548b5b124a85d0edd",
+    "instances/train/factory_05.json": "d446991a3042bf87eb1d07870468c97a77b9109eb4cc2cd8da4786302a1e47dd",
+    "instances/train/factory_06.json": "d09ac7be6f4fa6ddcc93c37706b0a18c4ed6294a99b4be509df4925367258fa7",
+    "instances/train/factory_07.json": "faef91be67138408101869c50f412317c9ec6a3919fe50a05fcf2e711ad83753",
+    "instances/train/factory_08.json": "205fdedcc8f52b9357503053fd26447848d5632608e51c2b23dd5349aad47cb6",
+    "instances/train/factory_09.json": "cbcbf06cdeb83e0f26927b1b728756d3eff145cc66840706604388bb2f80aae6",
+    "instances/eval/factory_shift_unseen.json": "64b60932dde621e0d96c9dc4f9ff012fc42f8fad24ac19b72656e3f586aa2c61"
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "networkx": "3.6.1",
+    "matplotlib": "3.11.2"
+  },
+  "results": [
+    {
+      "instance": "factory_train_00",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 19.0,
+      "requested_mbps": 19,
+      "initial_fraction": 0.21052631578947367,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_01",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 20.0,
+      "requested_mbps": 20,
+      "initial_fraction": 0.2,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_02",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 19.0,
+      "requested_mbps": 19,
+      "initial_fraction": 0.21052631578947367,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_03",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 20.0,
+      "requested_mbps": 20,
+      "initial_fraction": 0.2,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_04",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 19.0,
+      "requested_mbps": 19,
+      "initial_fraction": 0.21052631578947367,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_05",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 20.0,
+      "requested_mbps": 20,
+      "initial_fraction": 0.2,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_06",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 19.0,
+      "requested_mbps": 19,
+      "initial_fraction": 0.21052631578947367,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_07",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 20.0,
+      "requested_mbps": 20,
+      "initial_fraction": 0.2,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_08",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 19.0,
+      "requested_mbps": 19,
+      "initial_fraction": 0.21052631578947367,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_train_09",
+      "split": "train",
+      "initial_mbps": 4.0,
+      "reference_mbps": 20.0,
+      "requested_mbps": 20,
+      "initial_fraction": 0.2,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    },
+    {
+      "instance": "factory_shift_unseen",
+      "split": "eval",
+      "initial_mbps": 4.0,
+      "reference_mbps": 23.0,
+      "requested_mbps": 23,
+      "initial_fraction": 0.17391304347826086,
+      "reference_fraction": 1.0,
+      "initial_feasible": true,
+      "reference_feasible": true
+    }
+  ]
+}

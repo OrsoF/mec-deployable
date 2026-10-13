@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Du réseau à la décision d'orchestration</title>
+  <desc id="desc">Les scénarios entraînent un modèle PPO. L'état réseau est fourni au moteur qui exporte une décision validée. Un adaptateur à développer transmet la décision à un orchestrateur existant.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#64748b"/></marker>
+  </defs>
+  <rect width="1200" height="360" rx="18" fill="#f8fafc"/>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="36" y="40" font-size="23" font-weight="700" fill="#0f172a">Du réseau à la décision d'orchestration</text>
+    <rect x="350" y="64" width="275" height="62" rx="12" fill="#e0e7ff"/>
+    <text x="487" y="89" text-anchor="middle" font-size="16" font-weight="600" fill="#3730a3">Scénarios → entraînement PPO</text>
+    <text x="487" y="112" text-anchor="middle" font-size="14" fill="#3730a3">Modèle + normalisation + métadonnées</text>
+    <path d="M487,128 V158" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+    <rect x="36" y="168" width="240" height="112" rx="12" fill="#e2e8f0"/>
+    <text x="156" y="199" text-anchor="middle" font-size="19" font-weight="700" fill="#0f172a">État réseau · JSON</text>
+    <text x="156" y="228" text-anchor="middle" font-size="15" fill="#475569">Nœuds, liens, services</text>
+    <text x="156" y="252" text-anchor="middle" font-size="15" fill="#475569">Demandes et contraintes</text>
+    <path d="M282,224 H329" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="342" y="168" width="285" height="112" rx="12" fill="#0f766e"/>
+    <text x="484" y="199" text-anchor="middle" font-size="19" font-weight="700" fill="white">Network PPO</text>
+    <text x="484" y="228" text-anchor="middle" font-size="15" fill="#ccfbf1">Placement · routes · Mbps</text>
+    <text x="484" y="252" text-anchor="middle" font-size="15" fill="#ccfbf1">Décision validée → JSON</text>
+    <path d="M634,224 H681" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="694" y="168" width="194" height="112" rx="12" fill="white" stroke="#b45309" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="791" y="205" text-anchor="middle" font-size="18" font-weight="700" fill="#92400e">Adaptateur</text>
+    <text x="791" y="238" text-anchor="middle" font-size="15" fill="#92400e">À développer</text>
+    <path d="M895,224 H942" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="955" y="168" width="209" height="112" rx="12" fill="#e2e8f0"/>
+    <text x="1060" y="205" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">Orchestrateur</text>
+    <text x="1060" y="238" text-anchor="middle" font-size="15" fill="#475569">Application au réseau</text>
+    <text x="36" y="325" font-size="15" fill="#475569">Exécution CPU · Conteneur Docker · Interface par fichiers · Entraînement hors ligne</text>
+  </g>
+</svg>

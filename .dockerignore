@@ -5,3 +5,6 @@ __pycache__
 outputs
 *.egg-info
 *.pyc
+.ipynb_checkpoints
+notebook
+docs
