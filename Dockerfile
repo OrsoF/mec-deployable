@@ -6,8 +6,8 @@ COPY pyproject.toml LICENSE README.md ./
 COPY src ./src
 RUN if [ "$INSTALL_RL" = "true" ]; then python -m pip install --no-cache-dir '.[rl]'; \
     else python -m pip install --no-cache-dir .; fi
-COPY deploy.py eval.py train.py benchmark.py serve.py ./
+COPY deploy.py eval.py train.py benchmark.py serve.py temporal_deploy.py serve_temporal.py train_temporal.py ./
 COPY instances ./instances
-EXPOSE 8080
+EXPOSE 8080 8081
 # Binds externally only inside container; reverse proxy should enforce auth and TLS.
 CMD ["python", "serve.py", "--host", "0.0.0.0", "--strategy", "lookahead"]

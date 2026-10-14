@@ -1,0 +1,11 @@
+discounted_reward,evaluation_seed,fallback_periods,invalid_proposals,mean_horizon_reached,mean_mbps,migrations,planning_cutoffs,route_changes,runtime_p50_ms,runtime_p95_ms,runtime_total_ms,scenario,split,strategy,total_mbps_periods,total_reward,training_seed
+73.00174,,0,0,1,4.0,0,0,0,0.5068,1.4529,15.3542,temporal_test_bursty_901,test,keep,96.0,91.2,
+249.69963,,0,0,1,13.25,0,0,0,3.849,5.6169,92.3872,temporal_test_bursty_901,test,greedy,318.0,313.2,
+366.0041,,0,0,1,19.33333,0,0,2,32.1402,39.9538,781.4816,temporal_test_bursty_901,test,myopic,464.0,458.6,
+366.0041,,0,0,2.88,19.33333,0,21,2,150.3538,194.1611,3534.9109,temporal_test_bursty_901,test,mpc4,464.0,458.6,
+366.0041,,0,0,2.88,19.33333,0,21,2,186.3029,359.8747,5202.2187,temporal_test_bursty_901,test,mpc8,464.0,458.6,
+73.00174,,0,0,1,4.0,0,0,0,0.5046,0.9792,13.55,temporal_test_daily_900,test,keep,96.0,91.2,
+263.50798,,0,0,1,13.83333,0,0,0,3.2069,4.407,78.9108,temporal_test_daily_900,test,greedy,332.0,327.2,
+392.02254,,0,0,1,20.54167,0,0,2,27.6538,36.8236,666.9178,temporal_test_daily_900,test,myopic,493.0,487.6,
+392.02254,,0,0,2.88,20.54167,0,21,2,156.4556,189.0057,3701.2558,temporal_test_daily_900,test,mpc4,493.0,487.6,
+392.02254,,0,0,2.88,20.54167,0,21,2,190.8059,266.31,4845.005,temporal_test_daily_900,test,mpc8,493.0,487.6,

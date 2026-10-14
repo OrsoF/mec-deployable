@@ -1,0 +1,36 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - run: python -m pytest -q
+      - run: python deploy.py --strategy lookahead --output outputs/decision.json
+      - run: python benchmark.py --instances instances/eval --output outputs/benchmark
+      - run: python temporal_deploy.py --strategy myopic --output outputs/temporal_decision.json
+      - run: python scripts/benchmark_temporal.py --max-cases 1 --horizons 1 4 --max-candidates 5 --output outputs/temporal_smoke
+  rl-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: python -m pip install -e '.[rl,test]'
+      - run: python -m pytest -q tests/test_environment.py tests/test_temporal_env.py
+      - run: python train.py --timesteps 512 --output outputs/ppo_smoke
+      - run: python eval.py --checkpoint outputs/ppo_smoke --output outputs/smoke_decision.json
+      - run: python train_temporal.py --timesteps 512 --n-steps 64 --output outputs/temporal_ppo_smoke
+      - run: python scripts/benchmark_temporal.py --max-cases 1 --horizons 1 --checkpoints outputs/temporal_ppo_smoke --output outputs/temporal_rl_smoke

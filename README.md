@@ -6,6 +6,52 @@ A small, auditable network-decision engine that combines **placement, routing an
 
 **Status:** reference research/engineering demonstrator using **synthetic data**, not a production network controller. No model is bundled and no orchestrator actions are performed automatically.
 
+## v0.3: temporal control and independent PPO evaluation
+
+The repo now includes a **temporal MDP** with dynamic traffic, observable
+link status, migration and routing costs, and bounded **causal beam MPC**.
+The static version and its existing API are retained. PPO operates with one
+complete action per physical period, not 96 atomic edits on a frozen network.
+See [Temporal design and threat model](docs/temporal-design.md).
+
+```bash
+python -m pip install -e '.[test]'
+python -m pytest -q
+python scripts/generate_temporal_cases.py
+python scripts/benchmark_temporal.py --scenarios instances/temporal/test \
+  --horizons 1 4 8 --max-expansions 40 --output outputs/temporal_baselines
+python temporal_deploy.py --strategy mpc --horizon 4 \
+  --snapshot instances/temporal/online_example.json \
+  --output outputs/next_temporal_decision.json
+python serve_temporal.py --host 127.0.0.1 --port 8081 --strategy mpc
+```
+
+Independent PPO checkpoints (additional RL dependencies and compute required):
+
+```bash
+python -m pip install -e '.[rl,test]'
+python scripts/train_multiseed.py --mode static --budgets 100000 500000 1000000 \
+  --seeds 11 23 37 47 59 --action-mode hybrid
+python scripts/benchmark_multiseed.py --checkpoints \
+  outputs/multiseed/static_hybrid_100000_seed11 \
+  outputs/multiseed/static_hybrid_100000_seed23 --stochastic \
+  --episode-budgets 1 4 16
+python scripts/train_multiseed.py --mode temporal --budgets 100000 500000 1000000 \
+  --seeds 11 23 37 47 59
+python scripts/benchmark_temporal.py --checkpoints \
+  outputs/multiseed/temporal_periodic_100000_seed11 \
+  outputs/multiseed/temporal_periodic_100000_seed23
+```
+
+CLI and HTTP inference accept **observed current demand + public forecasts**, not
+future realized traffic. The response includes next-period state for tracking
+switching costs. `mpc4`/`mpc8` are **bounded beam-search approximations**, not
+certified optima. Record `mean_horizon_reached` and `planning_cutoffs`
+(the requested horizon may be truncated by the search budget); use
+`--max-expansions 0 --max-planning-ms 0` to remove both cutoffs at substantial
+CPU cost. No PPO-vs-MPC performance claim is made without actual PPO
+training. Running all 5 seeds × 3 budgets requires significant CPU time.
+
 ## Why this benchmark is nontrivial
 
 A fixed-route throughput greedy fails when cross-links are congested and detours require a route modification that does not immediately increase served traffic. On the held-out synthetic instance:
