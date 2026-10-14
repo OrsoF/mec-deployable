@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="495" viewBox="0 0 960 495" role="img" aria-labelledby="title desc">
+<title id="title">PPO for edge-network decisions</title><desc id="desc">A real synthetic topology supplies traffic and computing resources. Offline PPO training produces a policy. At inference the policy proposes placement, routing and bandwidth edits; feasibility is checked before JSON output. No measured placement result is shown.</desc>
+<defs><marker id="teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#087f82"/></marker><marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2563a6"/></marker><marker id="amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#a55b0b"/></marker><marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#52657b"/></marker></defs>
+<rect width="960" height="495" rx="16" fill="white"/>
+<g font-family="DejaVu Sans, Arial, sans-serif">
+<text x="24" y="38" font-size="17" fill="#087f82" font-weight="700" text-anchor="start">PPO FOR EDGE NETWORKS</text>
+<text x="24" y="77" font-size="34" fill="#142d4e" font-weight="700" text-anchor="start">Learn offline. Decide on demand.</text>
+<path d="M110 145 L365 145" fill="none" stroke="#c5d1de" stroke-width="3"/>
+<path d="M110 145 L365 265" fill="none" stroke="#c5d1de" stroke-width="3"/>
+<path d="M110 265 L365 145" fill="none" stroke="#c5d1de" stroke-width="3"/>
+<path d="M110 265 L365 265" fill="none" stroke="#c5d1de" stroke-width="3"/>
+<path d="M365 145 L625 205" fill="none" stroke="#c5d1de" stroke-width="3"/>
+<path d="M365 265 L625 205" fill="none" stroke="#c5d1de" stroke-width="3"/>
+<path d="M625 205 L842 205" fill="none" stroke="#c5d1de" stroke-width="3"/>
+<rect x="217.79" y="111" width="38.42" height="27" rx="5" fill="white" stroke="none"/>
+<text x="237" y="130" font-size="19" fill="#52657b" font-weight="400" text-anchor="middle">14</text>
+<rect x="184.395" y="216" width="27.21" height="27" rx="5" fill="white" stroke="none"/>
+<text x="198" y="235" font-size="19" fill="#52657b" font-weight="400" text-anchor="middle">2</text>
+<rect x="261.395" y="166" width="27.21" height="27" rx="5" fill="white" stroke="none"/>
+<text x="275" y="185" font-size="19" fill="#52657b" font-weight="400" text-anchor="middle">2</text>
+<rect x="217.79" y="231" width="38.42" height="27" rx="5" fill="white" stroke="none"/>
+<text x="237" y="250" font-size="19" fill="#52657b" font-weight="400" text-anchor="middle">14</text>
+<rect x="478.79" y="150" width="38.42" height="27" rx="5" fill="white" stroke="none"/>
+<text x="498" y="169" font-size="19" fill="#52657b" font-weight="400" text-anchor="middle">20</text>
+<rect x="478.79" y="246" width="38.42" height="27" rx="5" fill="white" stroke="none"/>
+<text x="498" y="265" font-size="19" fill="#52657b" font-weight="400" text-anchor="middle">20</text>
+<rect x="717.79" y="171" width="38.42" height="27" rx="5" fill="white" stroke="none"/>
+<text x="737" y="190" font-size="19" fill="#52657b" font-weight="400" text-anchor="middle">18</text>
+<rect x="35" y="113" width="150" height="64" rx="12" fill="#f2f6fa" stroke="#c5d1de"/>
+<text x="110" y="139" font-size="19" fill="#142d4e" font-weight="700" text-anchor="middle">North gateway</text>
+<text x="110" y="164" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">Traffic origin</text>
+<rect x="35" y="233" width="150" height="64" rx="12" fill="#f2f6fa" stroke="#c5d1de"/>
+<text x="110" y="259" font-size="19" fill="#142d4e" font-weight="700" text-anchor="middle">South gateway</text>
+<text x="110" y="284" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">Traffic origin</text>
+<rect x="290" y="113" width="150" height="64" rx="12" fill="#e0f1f0" stroke="#087f82"/>
+<text x="365" y="139" font-size="19" fill="#142d4e" font-weight="700" text-anchor="middle">Edge north</text>
+<text x="365" y="164" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">9 vCPU</text>
+<rect x="290" y="233" width="150" height="64" rx="12" fill="#e0f1f0" stroke="#087f82"/>
+<text x="365" y="259" font-size="19" fill="#142d4e" font-weight="700" text-anchor="middle">Edge south</text>
+<text x="365" y="284" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">9 vCPU</text>
+<rect x="550" y="173" width="150" height="64" rx="12" fill="#f2f6fa" stroke="#c5d1de"/>
+<text x="625" y="199" font-size="19" fill="#142d4e" font-weight="700" text-anchor="middle">Core switch</text>
+<text x="625" y="224" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">Transit</text>
+<rect x="767" y="173" width="150" height="64" rx="12" fill="#e0f1f0" stroke="#087f82"/>
+<text x="842" y="199" font-size="19" fill="#142d4e" font-weight="700" text-anchor="middle">Cloud DC</text>
+<text x="842" y="224" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">24 vCPU</text>
+<text x="24" y="325" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Video analytics: 6 vCPU · Telemetry: 4 vCPU</text>
+<text x="24" y="353" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">4 demands · up to 28 Mbps · link labels: Mbps/direction</text>
+<rect x="24" y="385" width="204" height="77" rx="12" fill="#f2f6fa" stroke="none"/>
+<text x="38" y="414" font-size="18" fill="#142d4e" font-weight="700" text-anchor="start">Network state</text>
+<text x="38" y="441" font-size="16" fill="#52657b" font-weight="400" text-anchor="start">Resources + traffic</text>
+<path d="M231 423 L257 423" fill="none" stroke="#52657b" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="260" y="385" width="204" height="77" rx="12" fill="#087f82" stroke="none"/>
+<text x="274" y="414" font-size="18" fill="white" font-weight="700" text-anchor="start">PPO policy</text>
+<text x="274" y="441" font-size="16" fill="white" font-weight="400" text-anchor="start">Placement + routing</text>
+<path d="M467 423 L493 423" fill="none" stroke="#52657b" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="496" y="385" width="204" height="77" rx="12" fill="#f2f6fa" stroke="none"/>
+<text x="510" y="414" font-size="18" fill="#142d4e" font-weight="700" text-anchor="start">Constraint checks</text>
+<text x="510" y="441" font-size="16" fill="#52657b" font-weight="400" text-anchor="start">CPU + links + latency</text>
+<path d="M703 423 L729 423" fill="none" stroke="#52657b" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="732" y="385" width="204" height="77" rx="12" fill="#f2f6fa" stroke="none"/>
+<text x="746" y="414" font-size="18" fill="#142d4e" font-weight="700" text-anchor="start">Decision JSON</text>
+<text x="746" y="441" font-size="16" fill="#52657b" font-weight="400" text-anchor="start">Ready for integration</text>
+<text x="24" y="480" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">Offline training → saved policy; online inference → validated allocation.</text>
+</g></svg>

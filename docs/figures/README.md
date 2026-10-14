@@ -1,4 +1,4 @@
-# README figures and reproducibility
+# PPO overview and retained technical figures
 
 Run from the repository root after installing the project. Matplotlib is the only extra figure dependency; NumPy and NetworkX are already core dependencies.
 
@@ -15,9 +15,12 @@ Validation on 14 October 2026: all 52 existing tests passed (two pre-existing Gy
 
 | Asset | Source and verification |
 | --- | --- |
+| `ppo-overview.svg` | The current README visual: actual topology, available CPU, service requirements and demand ceilings from `instances/eval/bottleneck_unseen.json`, followed by a conceptual PPO → validation → JSON pipeline. It shows no allocation outcome or comparison. A compact mobile layout is generated from the same inputs. |
 | `orchestration.svg` | Loads `instances/eval/bottleneck_unseen.json`, runs the actual `greedy` and `lookahead` baselines with three candidate paths, and checks both with `assess`. All loads, bandwidths, CPU use and latencies are computed. |
 | `architecture.svg` | Manually arranged source map of input parsers, static/temporal inference engines, shared types/paths/checker, offline training artifacts and JSON export. The outer rails connect inputs, engines and validation; training feeds policy runtimes separately. |
 | `temporal-comparison.svg` / `.png` | Reads the committed two-case CSV and verifies every plotted method's case membership, sample count, mean reward, population standard deviation and mean runtime against its JSON summary. Bars show means; circles show both cases, not confidence intervals. |
+
+The orchestration comparison, detailed architecture and temporal experimental figure are retained documentation assets; the simplified README uses only the PPO overview. Earlier results and original visuals are preserved without making comparisons the focus of the deployment project.
 
 For the hero, shortened labels map to `gateway_north`, `gateway_south`, `edge_north`, `edge_south`, `core_switch`, and `cloud_dc`. Video analytics and telemetry are the actual `video_analytics` and `machine_telemetry` services. Arrows aggregate demands on directed arcs. A single label `a/c` gives forward load/capacity; `a,b/c` gives forward and reverse loads against **independent** capacity `c` in each direction. The unused cloud link is retained. Routes and demand quantities are also captured in provenance. The layout deliberately fails on a different node ordering rather than silently drawing the wrong topology.
 
