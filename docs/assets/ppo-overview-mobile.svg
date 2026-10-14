@@ -4,7 +4,7 @@
 <rect width="560" height="740" rx="16" fill="white"/>
 <g font-family="DejaVu Sans, Arial, sans-serif">
 <text x="24" y="38" font-size="17" fill="#087f82" font-weight="700" text-anchor="start">PPO FOR EDGE NETWORKS</text>
-<text x="24" y="77" font-size="25" fill="#142d4e" font-weight="700" text-anchor="start">Learn offline. Decide on demand.</text>
+<text x="24" y="77" font-size="25" fill="#142d4e" font-weight="700" text-anchor="start">Service placement with PPO</text>
 <path d="M80 145 L290 145" fill="none" stroke="#c5d1de" stroke-width="3"/>
 <path d="M80 145 L290 295" fill="none" stroke="#c5d1de" stroke-width="3"/>
 <path d="M80 295 L290 145" fill="none" stroke="#c5d1de" stroke-width="3"/>
@@ -64,5 +64,5 @@
 <rect x="296" y="607" width="240" height="77" rx="12" fill="#f2f6fa" stroke="none"/>
 <text x="310" y="636" font-size="20" fill="#142d4e" font-weight="700" text-anchor="start">Decision JSON</text>
 <text x="310" y="663" font-size="16" fill="#52657b" font-weight="400" text-anchor="start">Ready for integration</text>
-<text x="24" y="725" font-size="15" fill="#52657b" font-weight="400" text-anchor="start">Offline learning → saved policy → online decisions.</text>
+<text x="24" y="725" font-size="15" fill="#52657b" font-weight="400" text-anchor="start">Training → checkpoint → inference → validated JSON</text>
 </g></svg>

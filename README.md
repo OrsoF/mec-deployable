@@ -16,7 +16,7 @@ Where should a service run, and how should traffic reach it? Edge nodes have lim
 ## How it works
 
 1. **Train offline.** PPO learns from network scenarios in a Gymnasium environment.
-2. **Decide on demand.** A saved policy guides placement, routing, and bandwidth edits from the current network state.
+2. **Generate a decision.** A saved policy guides placement, routing, and bandwidth edits from the current network state.
 3. **Validate and export.** Check CPU capacity, directed bandwidth, integer traffic bounds, and load-dependent latency; return a feasible decision as JSON.
 
 Train offline, then reuse the saved policy through the CLI or HTTP API. Static inference runs a sequence of validated edits and returns the best feasible state visited.

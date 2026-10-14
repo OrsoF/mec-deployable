@@ -149,7 +149,7 @@ def ppo_overview(problem, mobile=False):
     s = SVG(width,height,"PPO for edge-network decisions",
             "A real synthetic topology supplies traffic and computing resources. Offline PPO training produces a policy. At inference the policy proposes placement, routing and bandwidth edits; feasibility is checked before JSON output. No measured placement result is shown.")
     s.text(24,38,"PPO FOR EDGE NETWORKS",17,TEAL,700)
-    s.text(24,77,"Learn offline. Decide on demand.",25 if mobile else 34,weight=700)
+    s.text(24,77,"Service placement with PPO",25 if mobile else 34,weight=700)
     coords=[(80 if mobile else 110,145),(80 if mobile else 110,295 if mobile else 265),
             (290 if mobile else 365,145),(290 if mobile else 365,295 if mobile else 265),
             (470 if mobile else 625,220 if mobile else 205),
@@ -196,7 +196,7 @@ def ppo_overview(problem, mobile=False):
                 s.line(x+bw/2,by+77,x+bw/2,by+98,GRAY,2)
                 s.line(x+bw/2,by+98,144,by+98,GRAY,2)
                 s.line(144,by+98,144,by+114,GRAY,2,True)
-    s.text(24,height-15,"Offline learning → saved policy → online decisions." if mobile else "Offline training → saved policy; online inference → validated allocation.",15 if mobile else 17,GRAY)
+    s.text(24,height-15,"Training → checkpoint → inference → validated JSON",15 if mobile else 17,GRAY)
     s.save("ppo-overview-mobile.svg" if mobile else "ppo-overview.svg")
 
 
