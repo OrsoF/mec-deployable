@@ -7,8 +7,8 @@
 Where should a service run, and how should traffic reach it? Edge nodes have limited computing resources, network links have limited bandwidth, and applications have latency requirements. **MEC Deployable uses Proximal Policy Optimization (PPO)** to learn how to place services, route traffic, and allocate bandwidth within these constraints.
 
 <picture>
-  <source media="(max-width: 600px)" srcset="docs/assets/ppo-overview-mobile.svg">
-  <img src="docs/assets/ppo-overview.svg" alt="A synthetic edge network provides traffic and computing resources. A trained PPO policy proposes placement and routing decisions, checked against constraints before JSON output." width="960">
+  <source media="(max-width: 600px)" srcset="docs/assets/ppo-placement-mobile.svg">
+  <img src="docs/assets/ppo-placement.svg" alt="A synthetic edge network provides traffic and computing resources. A trained PPO policy proposes placement and routing decisions, checked against constraints before JSON output." width="960">
 </picture>
 
 *Example topology from the repository. Link labels show capacity in Mbps per direction.*

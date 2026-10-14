@@ -197,7 +197,7 @@ def ppo_overview(problem, mobile=False):
                 s.line(x+bw/2,by+98,144,by+98,GRAY,2)
                 s.line(144,by+98,144,by+114,GRAY,2,True)
     s.text(24,height-15,"Training → checkpoint → inference → validated JSON",15 if mobile else 17,GRAY)
-    s.save("ppo-overview-mobile.svg" if mobile else "ppo-overview.svg")
+    s.save("ppo-placement-mobile.svg" if mobile else "ppo-placement.svg")
 
 
 def architecture(mobile=False):

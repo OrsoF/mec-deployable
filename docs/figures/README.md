@@ -15,7 +15,7 @@ Validation on 14 October 2026: all 52 existing tests passed (two pre-existing Gy
 
 | Asset | Source and verification |
 | --- | --- |
-| `ppo-overview.svg` | The current README visual: actual topology, available CPU, service requirements and demand ceilings from `instances/eval/bottleneck_unseen.json`, followed by a conceptual PPO → validation → JSON pipeline. It shows no allocation outcome or comparison. A compact mobile layout is generated from the same inputs. |
+| `ppo-placement.svg` | The current README visual: actual topology, available CPU, service requirements and demand ceilings from `instances/eval/bottleneck_unseen.json`, followed by a conceptual PPO → validation → JSON pipeline. It shows no allocation outcome or comparison. A compact mobile layout is generated from the same inputs. |
 | `orchestration.svg` | Loads `instances/eval/bottleneck_unseen.json`, runs the actual `greedy` and `lookahead` baselines with three candidate paths, and checks both with `assess`. All loads, bandwidths, CPU use and latencies are computed. |
 | `architecture.svg` | Manually arranged source map of input parsers, static/temporal inference engines, shared types/paths/checker, offline training artifacts and JSON export. The outer rails connect inputs, engines and validation; training feeds policy runtimes separately. |
 | `temporal-comparison.svg` / `.png` | Reads the committed two-case CSV and verifies every plotted method's case membership, sample count, mean reward, population standard deviation and mean runtime against its JSON summary. Bars show means; circles show both cases, not confidence intervals. |
