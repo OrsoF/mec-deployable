@@ -15,6 +15,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - run: python -m pip install -e '.[test]'
+      - run: python -m pip check
       - run: python -m pytest -q
       - run: python deploy.py --strategy lookahead --output outputs/decision.json
       - run: python benchmark.py --instances instances/eval --output outputs/benchmark
@@ -29,6 +30,7 @@ jobs:
           python-version: "3.11"
           cache: pip
       - run: python -m pip install -e '.[rl,test]'
+      - run: python -m pip check
       - run: python -m pytest -q tests/test_environment.py tests/test_temporal_env.py
       - run: python train.py --timesteps 512 --output outputs/ppo_smoke
       - run: python eval.py --checkpoint outputs/ppo_smoke --output outputs/smoke_decision.json

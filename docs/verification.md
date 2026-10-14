@@ -1,5 +1,9 @@
 # Local verification — 14 October 2026
 
+**Later CI audit:** see [CI verification](ci-verification.md) for the reproduced
+Python 3.10/3.12 unit jobs, Python 3.11 RL smoke job, dataset fixes and remaining
+coverage limits. The dependency limitations below describe the earlier runtime.
+
 Environment: Python 3.13, NumPy 2.3.5, NetworkX 3.6.1, SciPy 1.17.0, pytest 9.0.2.
 
 Executed from repository root with `PYTHONPATH=src`:

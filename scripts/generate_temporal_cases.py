@@ -75,7 +75,8 @@ def generate(root: Path, *, periods: int = 24) -> None:
         folder.mkdir(parents=True, exist_ok=True)
         for seed, regime in jobs:
             out = make_case(base, split=split, seed=seed, regime=regime, periods=periods)
-            (folder / f"{out['id']}.json").write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
+            (folder / f"{out['id']}.json").write_bytes(
+                (json.dumps(out, indent=2) + "\n").encode("utf-8"))
 
 
 if __name__ == "__main__":

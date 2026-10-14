@@ -42,12 +42,12 @@ def generate(output: Path) -> None:
             "latency": 15 + (i % 6),
         }
         raw = build(base, name=f"bottleneck_train_{i:02d}", **params)
-        (train / f"bottleneck_{i:02d}.json").write_text(
-            json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+        (train / f"bottleneck_{i:02d}.json").write_bytes(
+            (json.dumps(raw, indent=2) + "\n").encode("utf-8"))
     held = build(base, name="routing_bottleneck_heldout",
                  cross=2, local=14, core=20, demand_max=7, latency=25)
-    (evaluation / "bottleneck_unseen.json").write_text(
-        json.dumps(held, indent=2) + "\n", encoding="utf-8")
+    (evaluation / "bottleneck_unseen.json").write_bytes(
+        (json.dumps(held, indent=2) + "\n").encode("utf-8"))
 
 
 if __name__ == "__main__":
