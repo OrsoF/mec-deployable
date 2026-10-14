@@ -13,11 +13,12 @@ import numpy as np
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train PPO on exactly 10 JSON network instances")
     parser.add_argument("--instances", type=Path, default=Path("instances/train"))
-    parser.add_argument("--output", type=Path, default=Path("outputs/ppo_factory"))
+    parser.add_argument("--output", type=Path, default=Path("outputs/ppo_bottleneck"))
     parser.add_argument("--timesteps", type=int, default=100_000)
     parser.add_argument("--episode-steps", type=int, default=96)
     parser.add_argument("--paths", type=int, default=3)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--action-mode", choices=("atomic", "hybrid"), default="hybrid")
     args = parser.parse_args()
     if args.timesteps < 1 or args.episode_steps < 1 or args.paths < 1:
         parser.error("timesteps, episode-steps and paths must be positive")
@@ -42,7 +43,7 @@ def main() -> None:
     torch.manual_seed(args.seed)
 
     def make_env():
-        return NetworkPPOEnv(scenarios, episode_steps=args.episode_steps, paths=args.paths)
+        return NetworkPPOEnv(scenarios, episode_steps=args.episode_steps, paths=args.paths, action_mode=args.action_mode)
 
     checker = make_env()
     check_env(checker, warn=True, skip_render_check=True)
@@ -58,7 +59,8 @@ def main() -> None:
         model.save(str(args.output / "model.zip"))
         venv.save(str(args.output / "vecnormalize.pkl"))
         metadata = {
-            "schema_version": 1,
+            "schema_version": 2,
+            "action_mode": args.action_mode,
             "algorithm": "PPO / discrete feasible edits",
             "seed": args.seed,
             "timesteps_requested": args.timesteps,

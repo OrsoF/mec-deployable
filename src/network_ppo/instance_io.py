@@ -36,11 +36,10 @@ def _number(data: dict, key: str, context: str, *, positive: bool = False, integ
     return int(value) if integer else float(value)
 
 
-def load_instance(path: str | Path) -> Problem:
-    path = Path(path)
-    raw = json.loads(path.read_text(encoding="utf-8"))
+def parse_instance(raw: dict) -> Problem:
+    """Validate an already-decoded JSON instance, e.g. an HTTP request body."""
     if not isinstance(raw, dict) or type(raw.get("schema_version")) is not int or raw["schema_version"] != 1:
-        raise ValueError(f"{path}: expected schema_version=1")
+        raise ValueError("expected schema_version=1")
     problem_id = raw.get("id")
     if not isinstance(problem_id, str) or not problem_id.strip():
         raise ValueError("instance.id must be nonempty")
@@ -93,3 +92,8 @@ def load_instance(path: str | Path) -> Problem:
     if not isinstance(description, str):
         raise ValueError("description must be a string")
     return Problem(problem_id, nodes, tuple(links), tuple(services), tuple(demands), description)
+
+
+def load_instance(path: str | Path) -> Problem:
+    """Load an instance from a JSON file."""
+    return parse_instance(json.loads(Path(path).read_text(encoding="utf-8")))

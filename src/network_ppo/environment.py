@@ -1,11 +1,10 @@
-"""One PPO/Gymnasium environment for placement + path + whole-Mbps allocation.
+"""Gymnasium environment for feasible network orchestration edits.
 
-Discrete actions:
- [0, S*N)                set placement(service, node)
- [S*N, S*N+D*K)          set route(demand, kth path)
- [S*N+D*K, ...+2*D)      change demand Mbps by -1 or +1
-
-Infeasible actions are rejected, rather than projected into an unreported state.
+The default 'hybrid' action space extends the original atomic edits with
+'route + greedy uplift' macro-actions. A macro changes one path, verifies its
+feasibility *before* increasing flows, and never projects an invalid state.
+Comparison against routing-lookahead is necessary: macro-actions grant PPO
+exactly the same local optimization primitive as the strong baseline.
 """
 from __future__ import annotations
 
@@ -14,7 +13,7 @@ import numpy as np
 from gymnasium.spaces import Box, Discrete
 
 from .constraints import assess
-from .heuristic import feasible_seed
+from .heuristic import feasible_seed, greedy_uplift
 from .paths import PathCatalog
 from .problem import Problem, Solution, validate_compatible
 
@@ -23,22 +22,27 @@ class NetworkPPOEnv(gym.Env):
     metadata = {"render_modes": []}
 
     def __init__(self, problems: Problem | list[Problem], *, episode_steps: int = 96,
-                 paths: int = 3):
+                 paths: int = 3, action_mode: str = "hybrid"):
         super().__init__()
         self.problems = [problems] if isinstance(problems, Problem) else list(problems)
         validate_compatible(self.problems)
         if episode_steps <= 0 or paths <= 0:
             raise ValueError("episode_steps and paths must be positive")
+        if action_mode not in ("atomic", "hybrid"):
+            raise ValueError("action_mode must be 'atomic' or 'hybrid'")
+        self.action_mode = action_mode
         self.episode_steps = episode_steps
         self.n_paths = paths
         self.catalogues = [PathCatalog(p, paths) for p in self.problems]
-        # Precompute feasible states ONCE for all training cases.
         self.seeds = [feasible_seed(p, c) for p, c in zip(self.problems, self.catalogues)]
         first = self.problems[0]
         s, n, d = len(first.services), len(first.nodes), len(first.demands)
         self.placement_actions = s * n
         self.routing_actions = d * paths
-        self.action_space = Discrete(self.placement_actions + self.routing_actions + 2 * d)
+        self.quantity_actions = 2 * d
+        self.atomic_actions = self.placement_actions + self.routing_actions + self.quantity_actions
+        self.macro_actions = d * paths if action_mode == "hybrid" else 0
+        self.action_space = Discrete(self.atomic_actions + self.macro_actions)
         self.case_index = 0
         self.problem = first
         self.catalogue = self.catalogues[0]
@@ -46,17 +50,13 @@ class NetworkPPOEnv(gym.Env):
         self.steps = 0
         self.best_episode = self.state.copy()
         self.best_overall = self.state.copy() if len(self.problems) == 1 else None
-        observation = self._observe()
-        self.observation_space = Box(low=-np.inf, high=np.inf, shape=observation.shape,
-                                     dtype=np.float32)
+        self.observation_space = Box(low=-np.inf, high=np.inf,
+                                     shape=self._observe().shape, dtype=np.float32)
 
     def reset(self, *, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
-        # Gym reset(seed) seeds RNG; sampling via this RNG ensures repeatability.
-        if len(self.problems) == 1:
-            index = 0
-        else:
-            index = int(self.np_random.integers(len(self.problems)))
+        index = (0 if len(self.problems) == 1
+                 else int(self.np_random.integers(len(self.problems))))
         self.case_index = index
         self.problem = self.problems[index]
         self.catalogue = self.catalogues[index]
@@ -70,7 +70,7 @@ class NetworkPPOEnv(gym.Env):
     def _observe(self) -> np.ndarray:
         p = self.problem
         evaluation = assess(p, self.state, self.catalogue)
-        n, s, d = len(p.nodes), len(p.services), len(p.demands)
+        n, s = len(p.nodes), len(p.services)
         max_flow = np.maximum(1, [dm.max_mbps for dm in p.demands])
         cpu = np.array([node.cpu for node in p.nodes])
         caps = p.arc_capacities
@@ -105,9 +105,14 @@ class NetworkPPOEnv(gym.Env):
         elif index < self.placement_actions + self.routing_actions:
             demand, route = divmod(index - self.placement_actions, self.n_paths)
             trial.routes[demand] = route
-        else:
+        elif index < self.atomic_actions:
             demand, sign = divmod(index - self.placement_actions - self.routing_actions, 2)
             trial.quantities[demand] += -1 if sign == 0 else 1
+        else:
+            demand, route = divmod(index - self.atomic_actions, self.n_paths)
+            trial.routes[demand] = route
+            if assess(self.problem, trial, self.catalogue).feasible:
+                trial = greedy_uplift(self.problem, self.catalogue, trial)
 
         previous = float(self.state.quantities.sum())
         feasible = assess(self.problem, trial, self.catalogue).feasible
@@ -122,7 +127,6 @@ class NetworkPPOEnv(gym.Env):
             self.best_overall = self.state.copy()
         self.steps += 1
         truncated = self.steps >= self.episode_steps
-        # Throughput change is the training objective. Reject invalid/no-op edits.
         reward = current - previous if current != previous else (-0.05 if not feasible else -0.01)
         return self._observe(), float(reward), False, truncated, {
             "instance_id": self.problem.id,

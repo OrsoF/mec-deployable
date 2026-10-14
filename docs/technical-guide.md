@@ -1,156 +1,63 @@
-# Network PPO — Guide technique
+# MEC Deployable — Technical guide (v0.2)
 
-[Retour à la présentation](../README.md)
+## Model and feasibility
 
-Un repo **PPO uniquement** pour décider du **placement des services, du routage des demandes et des quantités de trafic servies** sur un réseau industriel simplifié. Il n'importe ni `mecbench`, ni ses autres solveurs (MILP, A2C, CMA-ES, etc.).
+A problem contains nodes with available vCPU, services with CPU requirements, directed arcs from undirected physical links (two independent directional capacities), and demands with integer Mbps bounds and maximum delay. A solution chooses (1) one node per service, (2) one of `K` deterministic candidate paths per demand, and (3) integer Mbps per demand.
 
-## Démarrage
+For demand `i`, arc incidence `A[i,e]` and allocated Mbps `q[i]`, arc load is `L[e] = sum_i A[i,e] * q[i]`. Constraints: CPU load <= node capacity, arc load <= directional capacity, lower <= q <= upper, and demand latency `sum_e A[i,e] * (base[e] + slope[e]*L[e]) <= latency_budget[i]`. Every deployed decision is checked with `constraints.assess`; invalid edits are rejected. This is a **simplified deterministic model**.
 
-Prérequis : **Python 3.10+**. Depuis la racine du repo :
+## Scenario split
 
-```bash
-python -m pip install -e .
-python train.py
-python eval.py
-```
+Run `python scripts/generate_instances.py --output instances`. Ten training examples vary crossed-link capacity (1–4 Mbps), local capacity (12–16 Mbps), core-link capacity (18–21 Mbps), maximum demand (5–8 Mbps), and latency (15–20 ms). The held-out test uses cross=2, local=14, core=20, max demand=7 Mbps, latency=25 ms. This is parameterized interpolation/extrapolation over **one topology**, with no measured industrial data.
 
-Les **10 fichiers** `instances/train/*.json` constituent le jeu d'entraînement. L'entraînement sauvegarde :
+On the held-out instance, `greedy` gets 18 Mbps, while `lookahead` and `multistart` reach 28 Mbps, matching the sum of all maximum demands and therefore proving optimality *for that instance*. Other instances do not automatically have certificates just because one heuristic wins.
 
-```text
-outputs/ppo_factory/model.zip
-outputs/ppo_factory/vecnormalize.pkl
-outputs/ppo_factory/metadata.json
-```
+## Algorithms
 
-L'évaluation charge ce checkpoint et lit par défaut `instances/eval/factory_shift_unseen.json`, scénario **non utilisé** lors de l'entraînement. Elle produit **`outputs/decision.json`**, avec la solution faisable et ses contraintes contrôlées.
+- `greedy`: build a feasible minimum-Mbps placement/routing, then repeatedly increment a feasible demand's Mbps. **Placement and route are fixed**.
+- `lookahead`: start from greedy, try each single-demand reroute that preserves feasibility, then apply greedy uplift; accept strictly improving proposals until local convergence or the round limit.
+- `multistart`: run lookahead from bounded feasible variations of a minimum-flow route vector. Neither search heuristic is globally optimal in general.
+- `ppo`: Stable-Baselines3 MlpPolicy trained on the Gymnasium environment. Atomic edits change placement, route, or Mbps by one. `hybrid` adds route-and-uplift macro-actions (one admissible reroute followed by greedy increase); PPO gets no infeasible intermediate states.
+- `auto`: selects the highest feasible score among lookahead and optionally PPO. **Labels the true selected method**, records failures, uses no false PPO attribution.
+- `exact_small`: optional SciPy MILP on every enumerated placement and route combination. Fixed-route load and congestion latency become linear in Mbps. Search is exponential; only a completed enumeration or attainment of the demand upper bound certifies the optimum.
 
-Pour un test rapide de la tuyauterie (pas un apprentissage significatif) :
+Reward is the change in served Mbps and a small no-op/infeasibility penalty. PPO operates on **static per-instance optimization episodes**; it is not a simulated traffic-control process in which external demand evolves over time. Further work: temporal traffic, migration costs, stochastic observability, MPC comparator, action masking, data normalization and uncertainty calibration.
 
-```bash
-python train.py --timesteps 1024 --seed 42
-python eval.py --instance instances/eval/factory_shift_unseen.json
-```
-
-Paramétrage explicite :
+## Train, evaluate, benchmark
 
 ```bash
-python train.py --instances instances/train --output outputs/experiment_1 \
-  --timesteps 100000 --episode-steps 96 --paths 3 --seed 42
-
-python eval.py --checkpoint outputs/experiment_1 \
-  --instance /path/to/industrial_instance.json \
-  --output outputs/my_decision.json --episodes 5 --stochastic --seed 123
+pip install -e '.[rl,test]'
+pytest -q
+python train.py --instances instances/train --output outputs/ppo_bottleneck --timesteps 100000 --action-mode hybrid --seed 42
+python eval.py --checkpoint outputs/ppo_bottleneck --instance instances/eval/bottleneck_unseen.json --episodes 40 --stochastic
+python benchmark.py --instances instances/eval --checkpoint outputs/ppo_bottleneck --episodes 40 --stochastic --output outputs/benchmark_ppo
 ```
 
-Les sorties sont des **fichiers locaux**, pas des changements appliqués automatiquement à un orchestrateur.
+`train.py` checks 10 file count and topology signature; saves policy zip, normalization and metadata including instance hashes, library versions and action mode. The policy is never trained on the test instance. `eval.py` evaluates **PPO itself** and shows both weak and stronger heuristic references. Multiple episodes and stochastic action sampling can improve *best-of-budget* score, but are not single-pass deterministic inference. Compare compute/time budgets fairly.
 
-## Structure
+`benchmark.py` emits `results.csv` (one method, instance, seed, score and runtime per row) and `summary.json` (mean, standard deviation, runtime). Baseline methods are deterministic here so they are executed once per case. Benchmark runs include seed generation, model inference and final validation; model loading is excluded. It does not produce confidence bounds on out-of-sample performance and does not enforce equal number of solver operations.
 
-```text
-network-ppo/
-├── train.py                     # entraîne PPO (10 instances)
-├── eval.py                      # charge PPO et prédit sur 1 instance JSON
-├── src/network_ppo/
-│   ├── problem.py               # domaine : nœuds, liens, services, demandes
-│   ├── instance_io.py           # import JSON + contrôles de format
-│   ├── paths.py                 # chemins candidats déterministes
-│   ├── constraints.py           # vérification des contraintes réseau
-│   ├── heuristic.py             # état initial faisable + référence simple
-│   ├── environment.py           # Gymnasium (actions PPO)
-│   └── solution_io.py           # décision validée, export JSON
-├── instances/train/             # exactement 10 scénarios synthétiques
-├── instances/eval/              # scénario synthétique tenu à l'écart
-├── tests/
-├── pyproject.toml
-└── Dockerfile
-```
+## Input and output contract
 
-## Fournir une instance industrielle
+`POST /decide` consumes the same `schema_version=1` JSON as `instances/eval/bottleneck_unseen.json`; keys are `id`, `units`, `nodes`, `links`, `services` and their `demands`. Units must be exactly `Mbps`, `ms`, `vCPU`. Invalid, nonfinite, fractional-Mbps and duplicate identifiers are rejected.
 
-Il suffit de créer un **JSON** conforme au format v1. Exemple minimal (2 nœuds, 1 demande) :
-
-```json
-{
-  "schema_version": 1,
-  "id": "industrial_example",
-  "units": {"flow": "Mbps", "latency": "ms", "compute": "vCPU"},
-  "nodes": [
-    {"id": "gateway", "cpu": 0},
-    {"id": "edge", "cpu": 8}
-  ],
-  "links": [
-    {"source": "gateway", "target": "edge", "capacity_mbps": 20,
-     "latency_base_ms": 2, "latency_per_mbps_ms": 0.1}
-  ],
-  "services": [
-    {"id": "vision", "cpu": 4, "demands": [
-      {"id": "camera_1", "origin": "gateway", "min_mbps": 1,
-       "max_mbps": 6, "max_latency_ms": 10}
-    ]}
-  ]
-}
-```
-
-**Attention : ce petit exemple montre seulement le schéma JSON. Il ne peut PAS être évalué avec le modèle `ppo_factory`**, car il n'a pas la même topologie que le jeu d'entraînement. Pour exécuter `eval.py` avec le checkpoint fourni par `train.py`, il faut reprendre la liste **ordonnée** des nœuds, liens, services et demandes du dossier `instances/train/`, puis modifier les **valeurs** : CPU disponibles, capacités, latences, origines, min/max Mbps, budgets SLA, etc. Les identifiants, l'ordre et l'association demande → service doivent rester identiques. Un réseau complètement nouveau nécessite un nouvel entraînement avec 10 scénarios compatibles (ou une V2 à architecture graphe / padding).
-
-Voir `instances/eval/factory_shift_unseen.json` pour un exemple complet de scénario de production **illustratif** pour l'usine de démonstration (passerelles nord/sud, edge, switch, cloud).
-
-### Conventions métier
-
-- Liens physiques **bidirectionnels**. Chaque direction a une capacité indépendante, égale à `capacity_mbps`.
-- Latence d'un arc = `latency_base_ms + latency_per_mbps_ms × charge_totale_de_l'arc_mbps`. La latence d'une demande est la somme sur sa route.
-- Un service est placé **une seule fois** sur un nœud. Sa consommation CPU n'est comptée qu'une fois, quel que soit le nombre de demandes.
-- Chaque demande choisit un des **K plus courts chemins simples en nombre de sauts** ; s'il existe moins de K chemins, le dernier est réutilisé. Aucun partage multipath.
-- Chaque demande reçoit un nombre **entier de Mbps**, entre `min_mbps` et `max_mbps`, inclus.
-- Objectif : maximiser la **somme des Mbps servis** tout en respectant les CPU, capacités des arcs et budgets de latence. Pas de coût de migration ni de pondération des services.
-
-### Actions et observation PPO
-
-L'espace d'actions est **discret**, sans champs inutilisés : déplacer un service sur un nœud, choisir un chemin pour une demande, ou modifier sa quantité de **±1 Mbps**. Tout mouvement infaisable est **refusé**, laissant la solution précédente inchangée. La récompense correspond à la variation de Mbps servis (petite pénalité pour une action inutile/invalide).
-
-L'observation inclut placements, routes, débits, latences, charges CPU et liens, capacités et budgets, origines et mapping service/demande. Les observations sont normalisées pendant l'entraînement via `VecNormalize`, puis avec les **mêmes statistiques** pendant l'évaluation.
-
-Chaque épisode démarre d'un **état faisable à débit minimum**, construit par une recherche bornée (`heuristic.py`). Cela garantit qu'une décision exportée passe le validateur, mais implique que la politique RL apprend une **amélioration à partir d'une initialisation** et ne construit pas seule une solution depuis zéro. Une recherche bornée peut échouer même si une solution existe ; le programme remonte alors une erreur explicite.
-
-## Format de sortie
-
-`outputs/decision.json` inclut notamment :
-
-- `feasible`, `total_served_mbps`, `max_requested_mbps` et `served_fraction` ;
-- `placements`: service → nœud + vCPU utilisés ;
-- `demands`: service, origine, route (nœuds dans l'ordre), Mbps alloués, latence calculée et budget ;
-- `node_compute_loads`: vCPU utilisés et disponibles ;
-- `directed_links`: trafic et capacité par **arc dirigé** ;
-- `reference_seed_greedy_mbps`: quantité servie par une amélioration gloutonne des quantités avec les mêmes placement/routes initiaux, **sans PPO** ;
-- `ppo_minus_reference_mbps`: écart de PPO par rapport à cette référence (qui peut être **négatif**).
-
-Un seul épisode avec `--stochastic` absent produit des actions **déterministes**. Avec `--episodes 5 --stochastic`, le meilleur état valide rencontré est retenu sur plusieurs épisodes.
-
-## Tests
+`decision_json` produces: `schema_version`, `instance`, UTC evaluation time, seed, feasible, objective, placements, routes, allocated quantity, measured latency, CPU loads, directional link loads. `DecisionEngine` additionally provides: `selected_method`, `requested_strategy`, `candidate_scores_mbps`, `candidate_run_ms`, `decision_wall_ms`, `warnings`, `demand_upper_bound_mbps` and `certified_optimal`. A `certified_optimal=true` flag is used only if total served Mbps equals the trivial demand upper bound, not on an unverified heuristic improvement.
 
 ```bash
-python -m pip install -e '.[test]'
-python -m pytest -q
+python deploy.py --instance instances/eval/bottleneck_unseen.json --strategy lookahead --output outputs/decision.json
+python serve.py --host 127.0.0.1 --port 8080 --strategy lookahead
+curl -X POST http://127.0.0.1:8080/decide -H 'Content-Type: application/json' --data-binary @instances/eval/bottleneck_unseen.json
 ```
 
-Les tests couvrent chargement JSON, compatibilité des 10 scénarios, recherche d'un seed faisable, violations CPU/latence/débit, direction des liens, export, ainsi que les actions Gymnasium lorsque cette dépendance est installée.
+API: `GET /health` returns process health; `GET /ready` gives selected strategy and model-loaded status; `POST /decide` returns a validated decision or a JSON error (400 malformed input, 415 wrong MIME type, 413 oversized request, 422 rejected decision, 503 infeasibility). Request limit: 1 MiB. Server is synchronous in inference, with a lock around the policy RNG/state; deploy behind authentication, TLS and rate limits. No uploaded checkpoint or dynamic shell command is accepted. Stable-Baselines3 model formats involve pickle: accept checkpoints only from trusted authors.
 
-## Docker (CPU)
+## Deployment
 
 ```bash
-docker build -t network-ppo .
-docker run --rm -v "$(pwd)/outputs:/app/outputs" network-ppo python train.py --timesteps 100000
-docker run --rm -v "$(pwd)/outputs:/app/outputs" network-ppo python eval.py
+docker build -t mec-deployable .
+docker run --rm -p 127.0.0.1:8080:8080 mec-deployable
 ```
 
-Pour un JSON local en dehors du repo, monter son répertoire (`-v /chemin/instances:/app/external:ro`) et passer `--instance /app/external/fichier.json`. Les poids sont conservés entre deux conteneurs grâce au volume `outputs/`.
+To run the PPO model, build `--build-arg INSTALL_RL=true` and mount a **trusted** local checkpoint at `/app/outputs` read-only. Running `train.py` inside the RL Docker image is possible only if output directory is writable and the required scripts/data are present; saving a trained checkpoint is not performed by default. Container includes one application worker and does not include a reverse proxy.
 
-## Limitations / statut
-
-- Les 10 scénarios et l'usine sont **synthétiques** : ce ne sont pas des données opérateur. PPO sur 10 cas ne prouve pas une généralisation industrielle.
-- Topologie, ordre de nœuds, liens, services et demandes **fixes** entre entraînement et évaluation : une nouvelle architecture de réseau impose un réentraînement (V1).
-- Pas de multipath, files d'attente réalistes, jitter, haute disponibilité, réplication, priorités de service, coût de migration, énergie ou déploiement live.
-- PPO est **une heuristique apprise**, pas une garantie d'optimalité. Comparer ses résultats sur plusieurs seeds aux références déterministes et à un solveur exact **dans un benchmark séparé**.
-- Les figures et comparaisons exploratoires sont disponibles dans le [notebook](../notebook/network_and_efficiency.ipynb). Un court entraînement vérifie le pipeline, mais ne suffit pas à mesurer la qualité d'une politique.
-
-Le repo ne dépend d'aucun fichier, sous-module ni paquet Python du benchmark d'origine.
+Old figures/notebook were produced on the original less congested samples retained under `instances/legacy/`; their provenance is not a benchmark result for the new scenarios.

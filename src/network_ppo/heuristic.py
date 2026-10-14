@@ -97,3 +97,85 @@ def greedy_uplift(problem: Problem, paths: PathCatalog, initial: Solution) -> So
                 changed = True
         if not changed:
             return candidate
+
+
+def routing_lookahead_greedy(problem: Problem, paths: PathCatalog, initial: Solution,
+                             *, max_rounds: int = 30) -> Solution:
+    """Best improving one-demand reroute, followed by feasible greedy allocation.
+
+    Starts from greedy_uplift(initial). No service migrations and no infeasible
+    intermediate decisions. This is NOT a globally optimal algorithm.
+    """
+    if max_rounds < 1:
+        raise ValueError("max_rounds must be positive")
+    current = greedy_uplift(problem, paths, initial)
+    for _ in range(max_rounds):
+        best = current
+        best_score = int(current.quantities.sum())
+        for demand in range(len(problem.demands)):
+            for route in range(paths.k):
+                if route == int(current.routes[demand]):
+                    continue
+                trial = current.copy()
+                trial.routes[demand] = route
+                if not assess(problem, trial, paths).feasible:
+                    continue
+                trial = greedy_uplift(problem, paths, trial)
+                score = int(trial.quantities.sum())
+                if score > best_score:
+                    best, best_score = trial, score
+        if best_score == int(current.quantities.sum()):
+            break
+        current = best
+    return current
+
+
+def multi_start_lookahead(problem: Problem, paths: PathCatalog, initial: Solution,
+                          *, max_starts: int = 20, max_rounds: int = 30) -> Solution:
+    """Stronger deterministic baseline over minimum-flow route perturbations.
+
+    Does not optimize service placement; does not claim global optimality.
+    Bounded to at most max_starts feasible initializations including 'initial'.
+    """
+    if max_starts < 1:
+        raise ValueError("max_starts must be >= 1")
+    base = initial.copy()
+    base.quantities = np.array([d.min_mbps for d in problem.demands], dtype=np.int64)
+    best = routing_lookahead_greedy(problem, paths, base, max_rounds=max_rounds)
+    starts = 1
+    for d in range(len(problem.demands)):
+        for route in range(paths.k):
+            if starts >= max_starts:
+                return best
+            if route == base.routes[d]:
+                continue
+            trial = base.copy()
+            trial.routes[d] = route
+            if not assess(problem, trial, paths).feasible:
+                continue
+            starts += 1
+            candidate = routing_lookahead_greedy(problem, paths, trial,
+                                                max_rounds=max_rounds)
+            if candidate.quantities.sum() > best.quantities.sum():
+                best = candidate
+    return best
+
+
+BASELINES = {
+    "greedy": greedy_uplift,
+    "lookahead": routing_lookahead_greedy,
+    "multistart": multi_start_lookahead,
+}
+
+
+def solve_baseline(problem: Problem, paths: PathCatalog, method: str,
+                   initial: Solution | None = None) -> Solution:
+    """Compute checked reference solution, independent from optional RL libraries."""
+    if method not in BASELINES:
+        raise ValueError(f"Unknown baseline: {method!r}; choose {list(BASELINES)}")
+    initial = feasible_seed(problem, paths) if initial is None else initial
+    solution = BASELINES[method](problem, paths, initial)
+    report = assess(problem, solution, paths)
+    if not report.feasible:
+        raise RuntimeError("Baseline generated infeasible solution: " + "; ".join(report.violations))
+    return solution

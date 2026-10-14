@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _env():
-    case = load_instance(ROOT / "instances/eval/factory_shift_unseen.json")
+    case = load_instance(ROOT / "instances/eval/bottleneck_unseen.json")
     return NetworkPPOEnv(case, episode_steps=8, paths=3)
 
 
@@ -86,5 +86,20 @@ def test_training_instance_sampling_is_reproducible():
         again += [env.reset()[1]["instance_id"] for _ in range(15)]
         assert series == again
         assert len(set(series)) > 1
+    finally:
+        env.close()
+
+
+def test_hybrid_macro_preserves_feasibility_and_improves_flow():
+    env = _env()
+    try:
+        obs, _ = env.reset(seed=0)
+        assert env.action_mode == "hybrid"
+        assert env.macro_actions == len(env.problem.demands) * env.n_paths
+        # Macro edit is admissible only if its reroute remains feasible.
+        for i in range(env.macro_actions):
+            env.step(env.atomic_actions + i)
+            assert assess(env.problem, env.state, env.catalogue).feasible
+        assert env.best_episode.quantities.sum() >= env.seeds[0].quantities.sum()
     finally:
         env.close()

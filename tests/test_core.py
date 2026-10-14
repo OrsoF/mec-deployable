@@ -13,7 +13,7 @@ from network_ppo.solution_io import decision_json
 
 ROOT = Path(__file__).resolve().parents[1]
 TRAIN = ROOT / "instances" / "train"
-HELD_OUT = ROOT / "instances" / "eval" / "factory_shift_unseen.json"
+HELD_OUT = ROOT / "instances" / "eval" / "bottleneck_unseen.json"
 
 
 def test_exactly_ten_training_instances_plus_unseen_compatible():
@@ -45,7 +45,7 @@ def test_seed_and_greedy_reference_are_feasible(file):
 
 
 def _mutated(tmp_path, mutate):
-    data = json.loads((TRAIN / "factory_00.json").read_text())
+    data = json.loads((TRAIN / "bottleneck_00.json").read_text())
     mutate(data)
     path = tmp_path / "changed.json"
     path.write_text(json.dumps(data))
@@ -77,7 +77,7 @@ def test_reject_fractional_flows(tmp_path):
 
 def test_reject_topology_reordering(tmp_path):
     path = _mutated(tmp_path, lambda data: data["nodes"].reverse())
-    expected = load_instance(TRAIN / "factory_00.json").signature
+    expected = load_instance(TRAIN / "bottleneck_00.json").signature
     with pytest.raises(ValueError, match="Incompatible"):
         validate_compatible([load_instance(path)], expected)
 
@@ -100,7 +100,9 @@ def test_reject_duplicate_undirected_link(tmp_path):
 
 
 def test_reject_latency_constraint_violation():
+    from dataclasses import replace
     p = load_instance(HELD_OUT)
+    p = replace(p, demands=tuple(replace(d, max_latency_ms=6.0) for d in p.demands))
     catalog = PathCatalog(p, 3)
     seed = feasible_seed(p, catalog)
     assert assess(p, seed, catalog).feasible
