@@ -79,6 +79,32 @@ Stable-Baselines3 are optional; absence of these dependencies skips only the RL
 tests and makes PPO scripts unavailable. No empirical comparisons should be
 claimed before independently running actual PPO trainings.
 
+### Reproducible commands
+
+From the repository root, the committed temporal split can be regenerated and
+the baseline benchmark rerun without RL dependencies:
+
+```bash
+python scripts/generate_temporal_cases.py
+python scripts/benchmark_temporal.py --scenarios instances/temporal/test --horizons 1 4 8 --max-expansions 40 --output outputs/temporal_baselines
+```
+
+The [figure guide](figures/README.md#repeat-the-experiment) gives the exact
+two-case, 30-expansion protocol used in the README. Independent PPO evaluation
+requires optional RL dependencies and substantial additional compute:
+
+```bash
+python -m pip install -e '.[rl,test]'
+python scripts/train_multiseed.py --mode temporal --budgets 100000 500000 1000000 --seeds 11 23 37 47 59
+python scripts/benchmark_temporal.py --checkpoints outputs/multiseed/temporal_periodic_100000_seed11 outputs/multiseed/temporal_periodic_100000_seed23 --output outputs/temporal_ppo_evaluation
+```
+
+Training all five seeds at three budgets creates fifteen independent policies;
+the evaluation command above is an example using two of them, not a completed
+multi-seed result. Include all independently trained checkpoints when reporting
+an experiment. Static training and evaluation are documented in the
+[static guide](technical-guide.md#train-evaluate-benchmark).
+
 ## Causal online API
 
 The HTTP interface takes a **snapshot** and returns exactly one validated

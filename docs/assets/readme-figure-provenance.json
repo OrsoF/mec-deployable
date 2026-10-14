@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "generator": "docs/figures/generate.py",
+  "paths": 3,
+  "source_sha256": {
+    "instances/eval/bottleneck_unseen.json": "b211844aeaee8ac657c680e616bd33c4a0f962f9a0d9564f1c92242d25207266",
+    "docs/temporal_benchmark_two_cases.csv": "361d7328c30a5d1194a238d236637bfa3607fe11fd387091cf7b8d7b56ce73aa",
+    "docs/temporal_benchmark_two_cases_summary.json": "b304ec3c5efd63a3215fade06276f395d7a177961502a85e754ddb82da027368",
+    "docs/figures/generate.py": "54434eb3d591c6a4d19ccfec59135ad34958130e716e9381fb57f1aa7661a46c"
+  },
+  "static_decisions": {
+    "greedy": {
+      "placement": [
+        2,
+        3
+      ],
+      "routes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "quantities_mbps": [
+        7,
+        2,
+        2,
+        7
+      ],
+      "feasible": true
+    },
+    "lookahead": {
+      "placement": [
+        2,
+        3
+      ],
+      "routes": [
+        0,
+        2,
+        2,
+        0
+      ],
+      "quantities_mbps": [
+        7,
+        7,
+        7,
+        7
+      ],
+      "feasible": true
+    }
+  },
+  "temporal_protocol": {
+    "test_files": [
+      "temporal_test_bursty_901.json",
+      "temporal_test_daily_900.json"
+    ],
+    "forecast": "exogenous public mean; no future realized traffic",
+    "mpc": "time-bounded beam approximation, not certified optimum",
+    "max_planning_ms": null,
+    "max_expansions": 30,
+    "training_seed_is_independent_from_evaluation_seed": true,
+    "runtime": "wall clock per decision, excluding checkpoint load",
+    "ppo_checkpoints": [],
+    "eval_seeds": [
+      101,
+      202,
+      303
+    ],
+    "stochastic": false
+  },
+  "temporal_summary": {
+    "keep": {
+      "n_rows": 2,
+      "mean_total_reward": 91.2,
+      "std_total_reward": 0.0,
+      "mean_runtime_total_ms": 14.452100000000002
+    },
+    "greedy": {
+      "n_rows": 2,
+      "mean_total_reward": 320.2,
+      "std_total_reward": 7.0,
+      "mean_runtime_total_ms": 85.649
+    },
+    "myopic": {
+      "n_rows": 2,
+      "mean_total_reward": 473.1,
+      "std_total_reward": 14.5,
+      "mean_runtime_total_ms": 724.1997
+    },
+    "mpc4": {
+      "n_rows": 2,
+      "mean_total_reward": 473.1,
+      "std_total_reward": 14.5,
+      "mean_runtime_total_ms": 3618.08335
+    },
+    "mpc8": {
+      "n_rows": 2,
+      "mean_total_reward": 473.1,
+      "std_total_reward": 14.5,
+      "mean_runtime_total_ms": 5023.61185
+    }
+  },
+  "versions": {
+    "matplotlib": "3.11.2",
+    "numpy": "2.5.4",
+    "networkx": "3.6.1"
+  },
+  "notes": [
+    "Architecture is a manually arranged source-code map.",
+    "Temporal chart reuses recorded runtimes; regeneration does not rerun benchmarks.",
+    "Legacy plot_provenance.json is retained unchanged."
+  ]
+}

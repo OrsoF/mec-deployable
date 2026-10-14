@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="1168" viewBox="0 0 560 1168" role="img" aria-labelledby="title desc">
+<title id="title">Network orchestration under constraints</title><desc id="desc">Actual held-out topology and independently validated greedy and lookahead decisions. Arrows show aggregate directed traffic, labels show load/capacity in Mbps. Service placements stay fixed.</desc>
+<defs><marker id="teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#087f82"/></marker><marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2563a6"/></marker><marker id="amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#a55b0b"/></marker><marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#52657b"/></marker></defs>
+<rect width="560" height="1168" rx="16" fill="white"/>
+<g font-family="DejaVu Sans, Arial, sans-serif">
+<text x="24" y="38" font-size="17" fill="#087f82" font-weight="700" text-anchor="start">NETWORK ORCHESTRATION</text>
+<text x="24" y="76" font-size="28" fill="#142d4e" font-weight="700" text-anchor="start">A detour unlocks capacity</text>
+<text x="24" y="106" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Same topology. Same placement. Feasible routes.</text>
+<rect x="16" y="130" width="528" height="452" rx="12" fill="#f2f6fa" stroke="none"/>
+<text x="32" y="163" font-size="21" fill="#142d4e" font-weight="700" text-anchor="start">01 / Fixed-route greedy</text>
+<text x="32" y="196" font-size="27" fill="#a55b0b" font-weight="700" text-anchor="start">18 / 28 Mbps</text>
+<path d="M143.0 272.0 L227.0 272.0" fill="none" stroke="#087f82" stroke-width="4" marker-end="url(#teal)"/>
+<path d="M132.1167883211679 315.6788321167883 L233.28467153284672 400.46715328467155" fill="none" stroke="#a55b0b" stroke-width="4" marker-end="url(#amber)"/>
+<path d="M132.1167883211679 404.3211678832117 L233.28467153284672 319.53284671532845" fill="none" stroke="#a55b0b" stroke-width="4" marker-end="url(#amber)"/>
+<path d="M143.0 448.0 L227.0 448.0" fill="none" stroke="#087f82" stroke-width="4" marker-end="url(#teal)"/>
+<path d="M344.0 298.4 L416.0 333.6" fill="none" stroke="#c5d1de" stroke-width="2" stroke-dasharray="6 6"/>
+<path d="M344.0 421.6 L416.0 386.4" fill="none" stroke="#c5d1de" stroke-width="2" stroke-dasharray="6 6"/>
+<path d="M470.0 394.8 L470.0 441.2" fill="none" stroke="#c5d1de" stroke-width="2" stroke-dasharray="6 6"/>
+<rect x="156.94" y="240" width="56.12" height="27" rx="5" fill="white" stroke="none"/>
+<text x="185.0" y="259" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">7/14</text>
+<rect x="147.95499999999998" y="383.0" width="46.09" height="27" rx="5" fill="white" stroke="none"/>
+<text x="171" y="402.0" font-size="17" fill="#a55b0b" font-weight="400" text-anchor="middle">2/2</text>
+<rect x="172.95499999999998" y="313.0" width="46.09" height="27" rx="5" fill="white" stroke="none"/>
+<text x="196" y="332.0" font-size="17" fill="#a55b0b" font-weight="400" text-anchor="middle">2/2</text>
+<rect x="156.94" y="416" width="56.12" height="27" rx="5" fill="white" stroke="none"/>
+<text x="185.0" y="435" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">7/14</text>
+<rect x="373.94" y="277" width="56.12" height="27" rx="5" fill="white" stroke="none"/>
+<text x="402" y="296" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/20</text>
+<rect x="373.94" y="421" width="56.12" height="27" rx="5" fill="white" stroke="none"/>
+<text x="402" y="440" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/20</text>
+<rect x="487.94" y="405.0" width="56.12" height="27" rx="5" fill="white" stroke="none"/>
+<text x="516" y="424.0" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/18</text>
+<rect x="5.0" y="240.0" width="150" height="64" rx="10" fill="white" stroke="#c5d1de"/>
+<text x="80" y="262" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">North gateway</text>
+<text x="80" y="285" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/0 vCPU</text>
+<rect x="5.0" y="416.0" width="150" height="64" rx="10" fill="white" stroke="#c5d1de"/>
+<text x="80" y="438" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">South gateway</text>
+<text x="80" y="461" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/0 vCPU</text>
+<rect x="215.0" y="230.0" width="150" height="84" rx="10" fill="#e0f1f0" stroke="#087f82"/>
+<text x="290" y="262" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">Edge north</text>
+<text x="290" y="285" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">6/9 vCPU</text>
+<text x="290" y="305" font-size="16" fill="#087f82" font-weight="600" text-anchor="middle">Video analytics</text>
+<rect x="215.0" y="406.0" width="150" height="84" rx="10" fill="#e0f1f0" stroke="#087f82"/>
+<text x="290" y="438" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">Edge south</text>
+<text x="290" y="461" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">4/9 vCPU</text>
+<text x="290" y="481" font-size="16" fill="#087f82" font-weight="600" text-anchor="middle">Telemetry</text>
+<rect x="412.0" y="328.0" width="116" height="64" rx="10" fill="white" stroke="#c5d1de"/>
+<text x="470" y="350.0" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">Core switch</text>
+<text x="470" y="373.0" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/0 vCPU</text>
+<rect x="412.0" y="444.0" width="116" height="64" rx="10" fill="white" stroke="#c5d1de"/>
+<text x="470" y="466.0" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">Cloud DC</text>
+<text x="470" y="489.0" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/24 vCPU</text>
+<text x="32" y="544" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">Cameras N/S: 7/2  ·  Sensors N/S: 2/7 Mbps</text>
+<text x="32" y="570" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">Max route latency 3.04 ms / 25 ms budget</text>
+<rect x="16" y="598" width="528" height="452" rx="12" fill="#f2f6fa" stroke="none"/>
+<text x="32" y="631" font-size="21" fill="#142d4e" font-weight="700" text-anchor="start">02 / Routing lookahead</text>
+<text x="32" y="664" font-size="27" fill="#087f82" font-weight="700" text-anchor="start">28 / 28 Mbps</text>
+<path d="M143.0 740.0 L227.0 740.0" fill="none" stroke="#087f82" stroke-width="4" marker-end="url(#teal)"/>
+<path d="M132.1167883211679 783.6788321167883 L233.28467153284672 868.4671532846716" fill="none" stroke="#c5d1de" stroke-width="2" stroke-dasharray="6 6"/>
+<path d="M132.1167883211679 872.3211678832117 L233.28467153284672 787.5328467153284" fill="none" stroke="#c5d1de" stroke-width="2" stroke-dasharray="6 6"/>
+<path d="M143.0 916.0 L227.0 916.0" fill="none" stroke="#087f82" stroke-width="4" marker-end="url(#teal)"/>
+<path d="M344.0 766.4 L416.0 801.6" fill="none" stroke="#087f82" stroke-width="4" marker-end="url(#teal)" marker-start="url(#teal)"/>
+<path d="M344.0 889.6 L416.0 854.4" fill="none" stroke="#087f82" stroke-width="4" marker-end="url(#teal)" marker-start="url(#teal)"/>
+<path d="M470.0 862.8 L470.0 909.2" fill="none" stroke="#c5d1de" stroke-width="2" stroke-dasharray="6 6"/>
+<rect x="151.925" y="708" width="66.15" height="27" rx="5" fill="white" stroke="none"/>
+<text x="185.0" y="727" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">14/14</text>
+<rect x="147.95499999999998" y="851.0" width="46.09" height="27" rx="5" fill="white" stroke="none"/>
+<text x="171" y="870.0" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/2</text>
+<rect x="172.95499999999998" y="781.0" width="46.09" height="27" rx="5" fill="white" stroke="none"/>
+<text x="196" y="800.0" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/2</text>
+<rect x="151.925" y="884" width="66.15" height="27" rx="5" fill="white" stroke="none"/>
+<text x="185.0" y="903" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">14/14</text>
+<rect x="363.90999999999997" y="745" width="76.18" height="27" rx="5" fill="white" stroke="none"/>
+<text x="402" y="764" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">7,7/20</text>
+<rect x="363.90999999999997" y="889" width="76.18" height="27" rx="5" fill="white" stroke="none"/>
+<text x="402" y="908" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">7,7/20</text>
+<rect x="487.94" y="873.0" width="56.12" height="27" rx="5" fill="white" stroke="none"/>
+<text x="516" y="892.0" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/18</text>
+<rect x="5.0" y="708.0" width="150" height="64" rx="10" fill="white" stroke="#c5d1de"/>
+<text x="80" y="730" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">North gateway</text>
+<text x="80" y="753" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/0 vCPU</text>
+<rect x="5.0" y="884.0" width="150" height="64" rx="10" fill="white" stroke="#c5d1de"/>
+<text x="80" y="906" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">South gateway</text>
+<text x="80" y="929" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/0 vCPU</text>
+<rect x="215.0" y="698.0" width="150" height="84" rx="10" fill="#e0f1f0" stroke="#087f82"/>
+<text x="290" y="730" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">Edge north</text>
+<text x="290" y="753" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">6/9 vCPU</text>
+<text x="290" y="773" font-size="16" fill="#087f82" font-weight="600" text-anchor="middle">Video analytics</text>
+<rect x="215.0" y="874.0" width="150" height="84" rx="10" fill="#e0f1f0" stroke="#087f82"/>
+<text x="290" y="906" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">Edge south</text>
+<text x="290" y="929" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">4/9 vCPU</text>
+<text x="290" y="949" font-size="16" fill="#087f82" font-weight="600" text-anchor="middle">Telemetry</text>
+<rect x="412.0" y="796.0" width="116" height="64" rx="10" fill="white" stroke="#c5d1de"/>
+<text x="470" y="818.0" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">Core switch</text>
+<text x="470" y="841.0" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/0 vCPU</text>
+<rect x="412.0" y="912.0" width="116" height="64" rx="10" fill="white" stroke="#c5d1de"/>
+<text x="470" y="934.0" font-size="17" fill="#142d4e" font-weight="700" text-anchor="middle">Cloud DC</text>
+<text x="470" y="957.0" font-size="17" fill="#52657b" font-weight="400" text-anchor="middle">0/24 vCPU</text>
+<text x="32" y="1012" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">Cameras N/S: 7/7  ·  Sensors N/S: 7/7 Mbps</text>
+<text x="32" y="1038" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">Max route latency 11.32 ms / 25 ms budget</text>
+<path d="M24 1104 L54 1104" fill="none" stroke="#087f82" stroke-width="4" marker-end="url(#teal)"/>
+<text x="64" y="1110" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">Traffic</text>
+<path d="M164 1104 L194 1104" fill="none" stroke="#a55b0b" stroke-width="4" marker-end="url(#amber)"/>
+<text x="204" y="1110" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">Bottleneck</text>
+<path d="M345 1104 L375 1104" fill="none" stroke="#c5d1de" stroke-width="2" stroke-dasharray="6 6"/>
+<text x="385" y="1110" font-size="17" fill="#52657b" font-weight="400" text-anchor="start">Unused link</text>
+<text x="24" y="1144" font-size="16" fill="#52657b" font-weight="400" text-anchor="start">Labels: load/capacity (Mbps); a,b = two directions.</text>
+</g></svg>

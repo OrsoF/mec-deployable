@@ -1,4 +1,6 @@
-# MEC Deployable — Technical guide (v0.2)
+# MEC Deployable — Static engine and integration guide (v0.3)
+
+This guide covers the retained static engine. See [Temporal design](temporal-design.md) for the v0.3 temporal model, one-decision-per-period PPO, switching costs, causal beam MPC, and snapshot interface. The [README figures](figures/README.md) describe the verified examples and their source data.
 
 ## Model and feasibility
 
@@ -21,7 +23,7 @@ On the held-out instance, `greedy` gets 18 Mbps, while `lookahead` and `multista
 - `auto`: selects the highest feasible score among lookahead and optionally PPO. **Labels the true selected method**, records failures, uses no false PPO attribution.
 - `exact_small`: optional SciPy MILP on every enumerated placement and route combination. Fixed-route load and congestion latency become linear in Mbps. Search is exponential; only a completed enumeration or attainment of the demand upper bound certifies the optimum.
 
-Reward is the change in served Mbps and a small no-op/infeasibility penalty. PPO operates on **static per-instance optimization episodes**; it is not a simulated traffic-control process in which external demand evolves over time. Further work: temporal traffic, migration costs, stochastic observability, MPC comparator, action masking, data normalization and uncertainty calibration.
+Reward is the change in served Mbps and a small no-op/infeasibility penalty. Static PPO operates on **per-instance optimization episodes**; external demand does not evolve during these episodes. The separate temporal module implements evolving traffic, migration/routing costs and a bounded MPC comparator. Observation normalization is implemented and frozen for inference. Future work includes action masking, topology generalization and calibrated uncertainty.
 
 ## Train, evaluate, benchmark
 
@@ -59,5 +61,12 @@ docker run --rm -p 127.0.0.1:8080:8080 mec-deployable
 ```
 
 To run the PPO model, build `--build-arg INSTALL_RL=true` and mount a **trusted** local checkpoint at `/app/outputs` read-only. Running `train.py` inside the RL Docker image is possible only if output directory is writable and the required scripts/data are present; saving a trained checkpoint is not performed by default. Container includes one application worker and does not include a reverse proxy.
+
+```bash
+docker build --build-arg INSTALL_RL=true -t mec-deployable-rl .
+docker run --rm -p 127.0.0.1:8080:8080 -v "$(pwd)/outputs:/app/outputs:ro" mec-deployable-rl python serve.py --host 0.0.0.0 --strategy auto --checkpoint outputs/ppo_bottleneck
+```
+
+The mount syntax above uses a POSIX shell; use an absolute host path for Windows Docker. Docker build/runtime is not verified in the recorded local audit. The CLI accepts only a locally configured checkpoint; HTTP clients cannot select or upload one.
 
 Old figures/notebook were produced on the original less congested samples retained under `instances/legacy/`; their provenance is not a benchmark result for the new scenarios.

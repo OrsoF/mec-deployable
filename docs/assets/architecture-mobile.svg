@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="1130" viewBox="0 0 560 1130" role="img" aria-labelledby="title desc">
+<title id="title">Decision pipeline and training boundary</title><desc id="desc">CLI and HTTP inputs enter static or temporal decision engines. Engines reuse Problem, Solution, PathCatalog and assess. Optional PPO checkpoints are produced offline. Feasibility is checked before JSON export. Temporal clients persist next_previous; the demo applies no network actions.</desc>
+<defs><marker id="teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#087f82"/></marker><marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#2563a6"/></marker><marker id="amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#a55b0b"/></marker><marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#52657b"/></marker></defs>
+<rect width="560" height="1130" rx="16" fill="white"/>
+<g font-family="DejaVu Sans, Arial, sans-serif">
+<text x="24" y="38" font-size="17" fill="#087f82" font-weight="700" text-anchor="start">SOFTWARE ARCHITECTURE</text>
+<text x="24" y="76" font-size="28" fill="#142d4e" font-weight="700" text-anchor="start">One shared constraint model</text>
+<rect x="24" y="100" width="512" height="114" rx="12" fill="#f2f6fa" stroke="#c5d1de"/>
+<text x="42" y="131" font-size="22" fill="#142d4e" font-weight="700" text-anchor="start">01 / Network input</text>
+<text x="42" y="160" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">CLI / HTTP JSON · instance_io / dynamics</text>
+<text x="42" y="187" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Instance OR observations + forecasts</text>
+<rect x="24" y="240" width="512" height="170" rx="12" fill="#f2f6fa" stroke="#c5d1de"/>
+<text x="42" y="271" font-size="22" fill="#142d4e" font-weight="700" text-anchor="start">02 / Static engine</text>
+<text x="42" y="300" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">inference.py · DecisionEngine</text>
+<text x="42" y="327" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Greedy / lookahead / multistart</text>
+<text x="42" y="354" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Optional PPO · feasible edits</text>
+<text x="42" y="381" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">auto: best feasible throughput</text>
+<rect x="24" y="426" width="512" height="170" rx="12" fill="#f2f6fa" stroke="#c5d1de"/>
+<text x="42" y="457" font-size="22" fill="#142d4e" font-weight="700" text-anchor="start">02 / Temporal engine</text>
+<text x="42" y="486" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">temporal_inference.py</text>
+<text x="42" y="513" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Keep / greedy / myopic / beam MPC</text>
+<text x="42" y="540" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Optional PPO · one action/period</text>
+<text x="42" y="567" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">auto: best immediate stage reward</text>
+<path d="M548 157 L548 511" fill="none" stroke="#52657b" stroke-width="2"/>
+<path d="M548 325 L534 325" fill="none" stroke="#52657b" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M548 511 L534 511" fill="none" stroke="#52657b" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M536 157 L548 157" fill="none" stroke="#52657b" stroke-width="2"/>
+<rect x="24" y="616" width="512" height="95" rx="12" fill="#e0f1f0" stroke="#c5d1de"/>
+<text x="42" y="647" font-size="22" fill="#087f82" font-weight="700" text-anchor="start">Shared domain + feasibility primitives</text>
+<text x="42" y="676" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">problem.py · paths.py · constraints.assess</text>
+<text x="42" y="699" font-size="16" fill="#52657b" font-weight="400" text-anchor="start">Optional exact.py: tiny-instance MILP (SciPy)</text>
+<rect x="24" y="728" width="512" height="108" rx="12" fill="#f2f6fa" stroke="#c5d1de"/>
+<text x="42" y="759" font-size="22" fill="#2563a6" font-weight="700" text-anchor="start">Offline training → trusted checkpoints</text>
+<text x="42" y="788" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">train / train_temporal → Gymnasium → SB3</text>
+<text x="42" y="815" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Policy + frozen normalization + metadata</text>
+<path d="M24 758 L12 758" fill="none" stroke="#2563a6" stroke-width="2"/>
+<path d="M12 758 L12 325" fill="none" stroke="#2563a6" stroke-width="2"/>
+<path d="M12 325 L24 325" fill="none" stroke="#2563a6" stroke-width="2" marker-end="url(#blue)"/>
+<path d="M12 511 L24 511" fill="none" stroke="#2563a6" stroke-width="2" marker-end="url(#blue)"/>
+<path d="M548 511 L548 910" fill="none" stroke="#52657b" stroke-width="2"/>
+<path d="M548 910 L534 910" fill="none" stroke="#52657b" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="24" y="854" width="512" height="112" rx="12" fill="#e0f1f0" stroke="#c5d1de"/>
+<text x="42" y="885" font-size="22" fill="#087f82" font-weight="700" text-anchor="start">03 / Validate before export</text>
+<text x="42" y="914" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">CPU · bandwidth · bounds · latency</text>
+<text x="42" y="941" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Static auto: explicit baseline fallback</text>
+<path d="M280.0 966 L280.0 990" fill="none" stroke="#52657b" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="24" y="992" width="512" height="110" rx="12" fill="#f2f6fa" stroke="#c5d1de"/>
+<text x="42" y="1023" font-size="22" fill="#142d4e" font-weight="700" text-anchor="start">04 / Decision JSON</text>
+<text x="42" y="1052" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">solution_io · allocation + provenance</text>
+<text x="42" y="1079" font-size="18" fill="#52657b" font-weight="400" text-anchor="start">Temporal client persists next_previous</text>
+<text x="24" y="1111" font-size="16" fill="#52657b" font-weight="400" text-anchor="start">Temporal invalid actions: feasible fallback. No actuation.</text>
+</g></svg>
