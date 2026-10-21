@@ -6,7 +6,32 @@
     "instances/eval/bottleneck_unseen.json": "b211844aeaee8ac657c680e616bd33c4a0f962f9a0d9564f1c92242d25207266",
     "docs/temporal_benchmark_two_cases.csv": "361d7328c30a5d1194a238d236637bfa3607fe11fd387091cf7b8d7b56ce73aa",
     "docs/temporal_benchmark_two_cases_summary.json": "b304ec3c5efd63a3215fade06276f395d7a177961502a85e754ddb82da027368",
-    "docs/figures/generate.py": "18c28def1eae9dc9f58757233a483e494562f554186429a2af1cf97145ca6ab8"
+    "docs/figures/generate.py": "db59b6b3813eae345ac87e981b255994ed79b47c3c89ed819fc853db5164da5f",
+    "docs/figures/readme_hero.py": "6d4bf754c13b14801550db84489caa41da3c370b4a2b237c9641be61cdc9305c"
+  },
+  "readme_illustration": {
+    "method": "manually specified; not a PPO evaluation",
+    "placement": [
+      2,
+      3
+    ],
+    "routes": [
+      0,
+      2,
+      2,
+      0
+    ],
+    "quantities_mbps": [
+      3,
+      3,
+      3,
+      3
+    ],
+    "feasible": true,
+    "highlighted_demands": [
+      "camera_north",
+      "sensors_south"
+    ]
   },
   "static_decisions": {
     "greedy": {

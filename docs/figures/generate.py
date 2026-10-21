@@ -144,60 +144,10 @@ def hero(problem, catalog, solutions, mobile=False):
 
 
 def ppo_overview(problem, mobile=False):
-    """Illustrate inputs and PPO inference without attributing solver results."""
-    width, height = (560,740) if mobile else (960,495)
-    s = SVG(width,height,"PPO for edge-network decisions",
-            "A real synthetic topology supplies traffic and computing resources. Offline PPO training produces a policy. At inference the policy proposes placement, routing and bandwidth edits; feasibility is checked before JSON output. No measured placement result is shown.")
-    s.text(24,38,"PPO FOR EDGE NETWORKS",17,TEAL,700)
-    s.text(24,77,"Service placement with PPO",25 if mobile else 34,weight=700)
-    coords=[(80 if mobile else 110,145),(80 if mobile else 110,295 if mobile else 265),
-            (290 if mobile else 365,145),(290 if mobile else 365,295 if mobile else 265),
-            (470 if mobile else 625,220 if mobile else 205),
-            (470 if mobile else 842,340 if mobile else 205)]
-    assert [n.id for n in problem.nodes] == ["gateway_north","gateway_south","edge_north","edge_south","core_switch","cloud_dc"]
-    labels={(0,2):(185 if mobile else 237,130),(0,3):(175 if mobile else 198,245 if mobile else 235),
-            (1,2):(195 if mobile else 275,205 if mobile else 185),
-            (1,3):(185 if mobile else 237,280 if mobile else 250),
-            (2,4):(402 if mobile else 498,169),(3,4):(402 if mobile else 498,285 if mobile else 265),
-            (4,5):(516 if mobile else 737,285 if mobile else 190)}
-    for link in problem.links:
-        a,b=coords[link.source],coords[link.target]
-        s.line(*a,*b,LINE,3)
-    for link in problem.links:
-        x,y=labels[(link.source,link.target)]
-        s.pill(x,y,f"{link.capacity_mbps:g}",GRAY,19)
-    for i,(x,y) in enumerate(coords):
-        compute=problem.nodes[i].cpu > 0
-        s.rect(x-75,y-32,150,64,"#e0f1f0" if compute else PALE,TEAL if compute else LINE)
-        label=["North gateway","South gateway","Edge north","Edge south","Core switch","Cloud DC"][i]
-        s.text(x,y-6,label,17 if mobile else 19,weight=700,anchor="middle")
-        s.text(x,y+19,f"{problem.nodes[i].cpu:g} vCPU" if compute else "Traffic origin" if i<2 else "Transit",17,GRAY,anchor="middle")
-    aliases={"video_analytics":"Video analytics","machine_telemetry":"Telemetry"}
-    services=" · ".join(f"{aliases[service.id]}: {service.cpu:g} vCPU" for service in problem.services)
-    y=405 if mobile else 325
-    s.text(24,y,services,18,GRAY)
-    traffic=f"{len(problem.demands)} demands · up to {sum(d.max_mbps for d in problem.demands)} Mbps"
-    s.text(24,y+28,traffic if mobile else traffic+" · link labels: Mbps/direction",17,GRAY)
-    if mobile:
-        s.text(24,y+56,"Link labels: Mbps per direction",17,GRAY)
-    stages=[("Network state","Resources + traffic"),("PPO policy","Placement + routing"),
-            ("Constraint checks","CPU + links + latency"),("Decision JSON","Ready for integration")]
-    for i,(title,detail) in enumerate(stages):
-        x=24+(i%2)*272 if mobile else 24+i*236
-        by=490+(i//2)*117 if mobile else 385
-        bw=240 if mobile else 204
-        s.rect(x,by,bw,77,TEAL if i==1 else PALE)
-        s.text(x+14,by+29,title,20 if mobile else 18,"white" if i==1 else NAVY,700)
-        s.text(x+14,by+56,detail,16,"white" if i==1 else GRAY)
-        if i<3:
-            if not mobile or i%2==0:
-                s.line(x+bw+3,by+38,x+bw+29,by+38,GRAY,2,True)
-            else:
-                s.line(x+bw/2,by+77,x+bw/2,by+98,GRAY,2)
-                s.line(x+bw/2,by+98,144,by+98,GRAY,2)
-                s.line(144,by+98,144,by+114,GRAY,2,True)
-    s.text(24,height-15,"Training → checkpoint → inference → validated JSON",15 if mobile else 17,GRAY)
-    s.save("ppo-placement-mobile.svg" if mobile else "ppo-placement.svg")
+    from readme_hero import render_overview
+
+    render_overview(SVG, problem, mobile)
+
 
 
 def architecture(mobile=False):
@@ -328,9 +278,15 @@ def main():
         hero(problem,catalog,solutions,mobile)
         architecture(mobile)
         experiment(rows,summary,methods,mobile)
-    sources=[INSTANCE,CSV,SUMMARY,Path(__file__)]
+    sources=[INSTANCE,CSV,SUMMARY,Path(__file__),Path(__file__).with_name("readme_hero.py")]
+    from readme_hero import example_allocation
+    example, report = example_allocation(problem)
     provenance={"schema_version":1,"generator":"docs/figures/generate.py","paths":3,
                 "source_sha256":{str(p.relative_to(ROOT)).replace('\\','/'):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources},
+                "readme_illustration":{"method":"manually specified; not a PPO evaluation",
+                    "placement":example.placement.tolist(),"routes":example.routes.tolist(),
+                    "quantities_mbps":example.quantities.tolist(),"feasible":report.feasible,
+                    "highlighted_demands":["camera_north","sensors_south"]},
                 "static_decisions":{m:{"placement":s.placement.tolist(),"routes":s.routes.tolist(),"quantities_mbps":s.quantities.tolist(),"feasible":assess(problem,s,catalog).feasible} for m,s in solutions.items()},
                 "temporal_protocol":summary["protocol"],"temporal_summary":summary["summary"],
                 "versions":{name:version(name) for name in ("matplotlib","numpy","networkx")},
