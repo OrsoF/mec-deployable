@@ -1,4 +1,50 @@
-# CI verification — 14 October 2026
+# CI verification
+
+## Pre-push verification — 21 October 2026
+
+The hosted [CI run for commit `49527bd`](https://github.com/OrsoF/mec-deployable/actions/runs/39578497165)
+passed all three original jobs: `unit (3.10)`, `unit (3.12)`, and `rl-smoke`.
+The additional local changes below have not been pushed or checked by a new hosted run.
+
+Ruff was not part of the workflow. A new `lint` job installs the pinned
+`.[lint]` extra (Ruff 0.17.1), runs `python -m ruff check .`, and checks formatting
+with `python -m ruff format --check .`. Repository settings target Python 3.10
+and check import order, Pyflakes errors, and E4/E7/E9 rules. Narrow E402
+exceptions preserve notebook path setup and optional Gymnasium test skipping.
+Outputs are excluded. Python and notebook source formatting, import cleanup,
+local variable names, and a SHA helper were normalized without changing the
+algorithms, parameters, error contracts, or recorded experimental results.
+
+| Check on the updated working tree | Result |
+| --- | --- |
+| Full Python 3.12 suite with RL dependencies | 52 passed, no skips; two existing Gymnasium observation-bound warnings |
+| Fresh Python 3.12 environment installed with `.[test,lint]`, without RL | 46 passed; the two optional RL modules skipped as intended |
+| Dependency consistency in both environments | Passed |
+| Ruff lint and format in both environments | Passed; 48 files already formatted |
+| Static and temporal CLI decisions and CI benchmark commands | Passed |
+| Static and temporal PPO training (512 steps), evaluation, and temporal RL benchmark | Passed |
+| Wheel and source distribution | Built successfully |
+| Workflow syntax and action inputs | actionlint 1.7.12 passed; official download SHA-256 verified |
+| Figure generation | All 15 asset files deterministic across two runs; only source hashes in the provenance changed from the commit |
+| Notebook and compatibility review | Outputs, metadata and calculation AST preserved; all 38 tracked Python files parse with Python 3.10 grammar |
+| Git whitespace validation | `git diff --check` passed |
+
+Local logs and generated artifacts are in ignored `outputs/prepush-verification/`.
+To reproduce the new lint job after installation:
+
+```bash
+python -m pip install -e '.[lint]'
+python -m ruff check .
+python -m ruff format --check .
+```
+
+Local execution used Windows and Python 3.12.14; the new changes still need the
+hosted Ubuntu matrix after push. Python 3.10 grammar validation is not a local
+Python 3.10 runtime test. Docker is unavailable on this machine and remains
+unverified. The existing setuptools license-table deprecation warning is
+nonfatal. No changes were committed or pushed by this verification.
+
+## Historical verification — 14 October 2026
 
 The existing GitHub Actions workflow was inspected and every command in its three
 jobs was reproduced in isolated local environments. These runs were on Windows;

@@ -1,4 +1,5 @@
 """Stable K-shortest-hop simple path catalogue with directed arcs."""
+
 from __future__ import annotations
 
 from functools import lru_cache
@@ -24,7 +25,12 @@ class PathCatalog:
         if start == end:
             return ((start,),) * self.k
         # Ordering is fixed by the topology, NOT traffic or latency coefficients.
-        paths = [tuple(p) for _, p in zip(range(self.k), nx.shortest_simple_paths(self.graph, start, end))]
+        paths = [
+            tuple(p)
+            for _, p in zip(
+                range(self.k), nx.shortest_simple_paths(self.graph, start, end)
+            )
+        ]
         if not paths:
             raise ValueError(f"No path between {start} and {end}")
         return tuple(paths + [paths[-1]] * (self.k - len(paths)))

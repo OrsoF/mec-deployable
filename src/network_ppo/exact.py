@@ -5,6 +5,7 @@ constraints are linear in Mbps quantities. Enumerating all placements/routings
 and solving the resulting MILPs is globally exact only when the search finishes.
 Exponential search: intended for tiny test instances, NOT deployment.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -28,8 +29,13 @@ class ExactResult:
     reason: str
 
 
-def solve_exact_small(problem: Problem, paths: PathCatalog, *,
-                      max_configs: int = 5000, time_limit_s: float = 20) -> ExactResult:
+def solve_exact_small(
+    problem: Problem,
+    paths: PathCatalog,
+    *,
+    max_configs: int = 5000,
+    time_limit_s: float = 20,
+) -> ExactResult:
     """Return best feasible candidate; `certified` false if search truncated.
 
     Requires optional scipy; per-configuration MILP solver status is checked.
@@ -67,37 +73,57 @@ def solve_exact_small(problem: Problem, paths: PathCatalog, *,
             explored += 1
             incidence = np.zeros((d, len(problem.arcs)))
             for i, demand in enumerate(problem.demands):
-                chosen = paths.route(demand.origin, placement[demand.service], routes[i])
+                chosen = paths.route(
+                    demand.origin, placement[demand.service], routes[i]
+                )
                 for edge in zip(chosen, chosen[1:]):
                     incidence[i, paths.arc_index[edge]] = 1
             # edge_load = incidence.T @ quantities
             edge_matrix = incidence.T
             # latency_i = incidence_i @ base + sum_j [incidence_i @ diag(slope) @ incidence_j] q_j
             latency_matrix = (incidence * slopes) @ incidence.T
-            latency_rhs = np.array([x.max_latency_ms for x in problem.demands]) - incidence @ base
+            latency_rhs = (
+                np.array([x.max_latency_ms for x in problem.demands]) - incidence @ base
+            )
             matrix = np.vstack([edge_matrix, latency_matrix])
             rhs = np.concatenate([problem.arc_capacities, latency_rhs])
-            result = milp(c=-np.ones(d), integrality=np.ones(d),
-                          bounds=Bounds(lower, high),
-                          constraints=LinearConstraint(matrix, -np.inf, rhs),
-                          options={"time_limit": max(0.001, time_limit_s - (perf_counter() - start))})
+            result = milp(
+                c=-np.ones(d),
+                integrality=np.ones(d),
+                bounds=Bounds(lower, high),
+                constraints=LinearConstraint(matrix, -np.inf, rhs),
+                options={
+                    "time_limit": max(0.001, time_limit_s - (perf_counter() - start))
+                },
+            )
             if result.status == 1:
                 incomplete = True
                 break
             if result.status not in (0, 2):
-                raise RuntimeError(f"MILP solver failed on configuration {explored}: {result.message}")
+                raise RuntimeError(
+                    f"MILP solver failed on configuration {explored}: {result.message}"
+                )
             if result.x is None:
                 continue
-            candidate = Solution(np.array(placement, dtype=np.int64),
-                                 np.array(routes, dtype=np.int64),
-                                 np.rint(result.x).astype(np.int64))
+            candidate = Solution(
+                np.array(placement, dtype=np.int64),
+                np.array(routes, dtype=np.int64),
+                np.rint(result.x).astype(np.int64),
+            )
             if not assess(problem, candidate, paths).feasible:
                 raise RuntimeError("MILP returned infeasible integer solution")
             if candidate.quantities.sum() > best.quantities.sum():
                 best = candidate
             if int(best.quantities.sum()) == upper:
-                return ExactResult(best, True, explored, upper, "demand upper bound attained")
+                return ExactResult(
+                    best, True, explored, upper, "demand upper bound attained"
+                )
         if incomplete:
             break
-    return ExactResult(best, not incomplete, explored, upper,
-                       "exhaustive enumeration" if not incomplete else "search budget exhausted")
+    return ExactResult(
+        best,
+        not incomplete,
+        explored,
+        upper,
+        "exhaustive enumeration" if not incomplete else "search budget exhausted",
+    )

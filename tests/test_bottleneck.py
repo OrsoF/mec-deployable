@@ -1,4 +1,5 @@
 """Regression, reproducibility, integration, and fail-closed behavior tests."""
+
 from __future__ import annotations
 
 import json
@@ -44,12 +45,15 @@ def test_training_instances_have_bottlenecks_and_holdout_distinct():
     assert len({x.read_bytes() for x in train_files + [EVAL]}) == 11
     for case in cases:
         paths = PathCatalog(case, 3)
-        assert (solve_baseline(case, paths, "lookahead").quantities.sum()
-                > solve_baseline(case, paths, "greedy").quantities.sum())
+        assert (
+            solve_baseline(case, paths, "lookahead").quantities.sum()
+            > solve_baseline(case, paths, "greedy").quantities.sum()
+        )
 
 
 def test_generator_reproduces_committed_instances(tmp_path):
     from scripts.generate_instances import generate
+
     generate(tmp_path)
     for file in sorted((ROOT / "instances/train").glob("*.json")) + [EVAL]:
         rel = file.relative_to(ROOT / "instances")
@@ -94,9 +98,22 @@ def test_parse_instance_rejects_bad_units_and_nonobjects():
 
 def test_deploy_cli_from_clean_process(tmp_path):
     output = tmp_path / "decision.json"
-    run = subprocess.run([sys.executable, "deploy.py", "--instance", str(EVAL),
-                          "--strategy", "lookahead", "--output", str(output)],
-                         cwd=ROOT, capture_output=True, text=True, timeout=30)
+    run = subprocess.run(
+        [
+            sys.executable,
+            "deploy.py",
+            "--instance",
+            str(EVAL),
+            "--strategy",
+            "lookahead",
+            "--output",
+            str(output),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
     assert run.returncode == 0, run.stderr
     data = json.loads(output.read_text())
     assert data["feasible"] and data["total_served_mbps"] == 28
@@ -118,14 +135,24 @@ def test_http_json_api_integration():
         with urlopen(url + "/ready", timeout=3) as resp:
             assert json.load(resp)["status"] == "ready"
         raw = EVAL.read_bytes()
-        with urlopen(Request(url + "/decide", data=raw,
-                             headers={"Content-Type": "application/json"}), timeout=5) as resp:
+        with urlopen(
+            Request(
+                url + "/decide", data=raw, headers={"Content-Type": "application/json"}
+            ),
+            timeout=5,
+        ) as resp:
             out = json.load(resp)
             assert out["total_served_mbps"] == 28
             assert out["feasible"]
         try:
-            urlopen(Request(url + "/decide", data=b"{}",
-                            headers={"Content-Type": "application/json"}), timeout=3)
+            urlopen(
+                Request(
+                    url + "/decide",
+                    data=b"{}",
+                    headers={"Content-Type": "application/json"},
+                ),
+                timeout=3,
+            )
         except HTTPError as err:
             assert err.code == 400
         else:

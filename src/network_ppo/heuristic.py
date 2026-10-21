@@ -4,6 +4,7 @@ The seed is deliberately initialized at minimum requested Mbps. PPO must learn
 which feasible edits increase throughput. A greedy uplift is used ONLY for
 reporting a transparent, non-PPO reference score at evaluation time.
 """
+
 from __future__ import annotations
 
 from itertools import combinations, product
@@ -30,8 +31,13 @@ def _route_choices(n_demands: int, n_paths: int, limit: int):
                     return
 
 
-def feasible_seed(problem: Problem, paths: PathCatalog, *, beam_width: int = 64,
-                  route_trials: int = 1024) -> Solution:
+def feasible_seed(
+    problem: Problem,
+    paths: PathCatalog,
+    *,
+    beam_width: int = 64,
+    route_trials: int = 1024,
+) -> Solution:
     """Find feasible placements/routes at minimum Mbps; raise if no seed found.
 
     CPU-constrained beam search considers nearest demand origins first, then
@@ -60,17 +66,25 @@ def feasible_seed(problem: Problem, paths: PathCatalog, *, beam_width: int = 64,
                 new_remaining = remaining.copy()
                 new_remaining[node] -= need
                 # Deterministic demand-weighted path length ranking.
-                extra = sum(max(1, min_q[d]) * (len(paths.route(dm.origin, node, 0)) - 1)
-                            for d, dm in enumerate(problem.demands) if dm.service == s)
+                extra = sum(
+                    max(1, min_q[d]) * (len(paths.route(dm.origin, node, 0)) - 1)
+                    for d, dm in enumerate(problem.demands)
+                    if dm.service == s
+                )
                 next_beam.append((cost + extra, tuple(candidate), new_remaining))
         if not next_beam:
-            raise ValueError(f"No CPU-feasible placement found for service {problem.services[s].id}")
+            raise ValueError(
+                f"No CPU-feasible placement found for service {problem.services[s].id}"
+            )
         next_beam.sort(key=lambda row: (row[0], row[1]))
         beam = next_beam[:beam_width]
     for _, placement, _ in beam:
         for choice in _route_choices(n_demands, paths.k, route_trials):
-            candidate = Solution(np.asarray(placement, dtype=np.int64),
-                                 np.asarray(choice, dtype=np.int64), min_q.copy())
+            candidate = Solution(
+                np.asarray(placement, dtype=np.int64),
+                np.asarray(choice, dtype=np.int64),
+                min_q.copy(),
+            )
             if assess(problem, candidate, paths).feasible:
                 return candidate
     raise ValueError(
@@ -99,8 +113,9 @@ def greedy_uplift(problem: Problem, paths: PathCatalog, initial: Solution) -> So
             return candidate
 
 
-def routing_lookahead_greedy(problem: Problem, paths: PathCatalog, initial: Solution,
-                             *, max_rounds: int = 30) -> Solution:
+def routing_lookahead_greedy(
+    problem: Problem, paths: PathCatalog, initial: Solution, *, max_rounds: int = 30
+) -> Solution:
     """Best improving one-demand reroute, followed by feasible greedy allocation.
 
     Starts from greedy_uplift(initial). No service migrations and no infeasible
@@ -130,8 +145,14 @@ def routing_lookahead_greedy(problem: Problem, paths: PathCatalog, initial: Solu
     return current
 
 
-def multi_start_lookahead(problem: Problem, paths: PathCatalog, initial: Solution,
-                          *, max_starts: int = 20, max_rounds: int = 30) -> Solution:
+def multi_start_lookahead(
+    problem: Problem,
+    paths: PathCatalog,
+    initial: Solution,
+    *,
+    max_starts: int = 20,
+    max_rounds: int = 30,
+) -> Solution:
     """Stronger deterministic baseline over minimum-flow route perturbations.
 
     Does not optimize service placement; does not claim global optimality.
@@ -154,8 +175,9 @@ def multi_start_lookahead(problem: Problem, paths: PathCatalog, initial: Solutio
             if not assess(problem, trial, paths).feasible:
                 continue
             starts += 1
-            candidate = routing_lookahead_greedy(problem, paths, trial,
-                                                max_rounds=max_rounds)
+            candidate = routing_lookahead_greedy(
+                problem, paths, trial, max_rounds=max_rounds
+            )
             if candidate.quantities.sum() > best.quantities.sum():
                 best = candidate
     return best
@@ -168,8 +190,9 @@ BASELINES = {
 }
 
 
-def solve_baseline(problem: Problem, paths: PathCatalog, method: str,
-                   initial: Solution | None = None) -> Solution:
+def solve_baseline(
+    problem: Problem, paths: PathCatalog, method: str, initial: Solution | None = None
+) -> Solution:
     """Compute checked reference solution, independent from optional RL libraries."""
     if method not in BASELINES:
         raise ValueError(f"Unknown baseline: {method!r}; choose {list(BASELINES)}")
@@ -177,5 +200,7 @@ def solve_baseline(problem: Problem, paths: PathCatalog, method: str,
     solution = BASELINES[method](problem, paths, initial)
     report = assess(problem, solution, paths)
     if not report.feasible:
-        raise RuntimeError("Baseline generated infeasible solution: " + "; ".join(report.violations))
+        raise RuntimeError(
+            "Baseline generated infeasible solution: " + "; ".join(report.violations)
+        )
     return solution

@@ -3,6 +3,7 @@
 This service is a reference integration adapter, NOT a hardened internet-facing
 server. Run behind an authenticated reverse proxy with rate limits and TLS.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -20,7 +21,9 @@ MAX_BYTES = 1024 * 1024
 def handler_factory(engine: DecisionEngine):
     class Handler(BaseHTTPRequestHandler):
         def respond(self, status: int, data: dict) -> None:
-            payload = json.dumps(data, ensure_ascii=False, allow_nan=False).encode("utf-8")
+            payload = json.dumps(data, ensure_ascii=False, allow_nan=False).encode(
+                "utf-8"
+            )
             self.send_response(status)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(payload)))
@@ -32,9 +35,17 @@ def handler_factory(engine: DecisionEngine):
             if self.path == "/health":
                 return self.respond(200, {"status": "ok"})
             if self.path == "/ready":
-                return self.respond(200, {"status": "ready", "strategy": engine.strategy,
-                                          "model_loaded": engine.runtime is not None,
-                                          "warnings": [engine.checkpoint_error] if engine.checkpoint_error else []})
+                return self.respond(
+                    200,
+                    {
+                        "status": "ready",
+                        "strategy": engine.strategy,
+                        "model_loaded": engine.runtime is not None,
+                        "warnings": [engine.checkpoint_error]
+                        if engine.checkpoint_error
+                        else [],
+                    },
+                )
             self.respond(404, {"error": "not found"})
 
         def do_POST(self):
@@ -53,15 +64,21 @@ def handler_factory(engine: DecisionEngine):
                 payload = json.loads(self.rfile.read(size))
                 problem = parse_instance(payload)
             except (ValueError, TypeError, UnicodeError, json.JSONDecodeError) as exc:
-                return self.respond(400, {"error": "invalid instance", "detail": str(exc)})
+                return self.respond(
+                    400, {"error": "invalid instance", "detail": str(exc)}
+                )
             try:
                 with lock:
                     result = engine.decide(problem)
                 return self.respond(200, result)
             except ValueError as exc:
-                return self.respond(422, {"error": "decision rejected", "detail": str(exc)})
+                return self.respond(
+                    422, {"error": "decision rejected", "detail": str(exc)}
+                )
             except RuntimeError as exc:
-                return self.respond(503, {"error": "decision unavailable", "detail": str(exc)})
+                return self.respond(
+                    503, {"error": "decision unavailable", "detail": str(exc)}
+                )
 
     lock = Lock()  # Model RNG / VecNormalize are not thread-safe.
     return Handler
@@ -73,11 +90,19 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=8080)
     add_engine_args(parser)
     args = parser.parse_args()
-    engine = DecisionEngine(strategy=args.strategy, checkpoint=args.checkpoint,
-                            paths=args.paths, episodes=args.episodes,
-                            stochastic=args.stochastic, seed=args.seed)
+    engine = DecisionEngine(
+        strategy=args.strategy,
+        checkpoint=args.checkpoint,
+        paths=args.paths,
+        episodes=args.episodes,
+        stochastic=args.stochastic,
+        seed=args.seed,
+    )
     with ThreadingHTTPServer((args.host, args.port), handler_factory(engine)) as server:
-        print(f"Listening on http://{args.host}:{args.port} (strategy={args.strategy})", flush=True)
+        print(
+            f"Listening on http://{args.host}:{args.port} (strategy={args.strategy})",
+            flush=True,
+        )
         server.serve_forever()
 
 

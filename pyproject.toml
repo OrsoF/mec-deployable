@@ -13,6 +13,7 @@ dependencies = ["numpy>=1.24,<3", "networkx>=2.8,<4"]
 [project.optional-dependencies]
 rl = ["gymnasium>=0.29,<2", "stable-baselines3>=2.2,<3"]
 test = ["pytest>=7", "scipy>=1.9,<2"]
+lint = ["ruff==0.17.1"]
 notebook = ["matplotlib>=3.7,<4", "jupyterlab>=4,<5"]
 
 [tool.setuptools.packages.find]
@@ -22,3 +23,17 @@ include = ["network_ppo*"]
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+extend-exclude = ["outputs"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# The notebook locates the repository before importing it. Optional RL tests
+# skip the module before importing Gymnasium-dependent project modules.
+"notebook/*.ipynb" = ["E402"]
+"tests/test_environment.py" = ["E402"]
+"tests/test_temporal_env.py" = ["E402"]

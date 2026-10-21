@@ -6,6 +6,7 @@ feasibility *before* increasing flows, and never projects an invalid state.
 Comparison against routing-lookahead is necessary: macro-actions grant PPO
 exactly the same local optimization primitive as the strong baseline.
 """
+
 from __future__ import annotations
 
 import gymnasium as gym
@@ -15,14 +16,20 @@ from gymnasium.spaces import Box, Discrete
 from .constraints import assess
 from .heuristic import feasible_seed, greedy_uplift
 from .paths import PathCatalog
-from .problem import Problem, Solution, validate_compatible
+from .problem import Problem, validate_compatible
 
 
 class NetworkPPOEnv(gym.Env):
     metadata = {"render_modes": []}
 
-    def __init__(self, problems: Problem | list[Problem], *, episode_steps: int = 96,
-                 paths: int = 3, action_mode: str = "hybrid"):
+    def __init__(
+        self,
+        problems: Problem | list[Problem],
+        *,
+        episode_steps: int = 96,
+        paths: int = 3,
+        action_mode: str = "hybrid",
+    ):
         super().__init__()
         self.problems = [problems] if isinstance(problems, Problem) else list(problems)
         validate_compatible(self.problems)
@@ -34,13 +41,17 @@ class NetworkPPOEnv(gym.Env):
         self.episode_steps = episode_steps
         self.n_paths = paths
         self.catalogues = [PathCatalog(p, paths) for p in self.problems]
-        self.seeds = [feasible_seed(p, c) for p, c in zip(self.problems, self.catalogues)]
+        self.seeds = [
+            feasible_seed(p, c) for p, c in zip(self.problems, self.catalogues)
+        ]
         first = self.problems[0]
         s, n, d = len(first.services), len(first.nodes), len(first.demands)
         self.placement_actions = s * n
         self.routing_actions = d * paths
         self.quantity_actions = 2 * d
-        self.atomic_actions = self.placement_actions + self.routing_actions + self.quantity_actions
+        self.atomic_actions = (
+            self.placement_actions + self.routing_actions + self.quantity_actions
+        )
         self.macro_actions = d * paths if action_mode == "hybrid" else 0
         self.action_space = Discrete(self.atomic_actions + self.macro_actions)
         self.case_index = 0
@@ -50,13 +61,17 @@ class NetworkPPOEnv(gym.Env):
         self.steps = 0
         self.best_episode = self.state.copy()
         self.best_overall = self.state.copy() if len(self.problems) == 1 else None
-        self.observation_space = Box(low=-np.inf, high=np.inf,
-                                     shape=self._observe().shape, dtype=np.float32)
+        self.observation_space = Box(
+            low=-np.inf, high=np.inf, shape=self._observe().shape, dtype=np.float32
+        )
 
     def reset(self, *, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
-        index = (0 if len(self.problems) == 1
-                 else int(self.np_random.integers(len(self.problems))))
+        index = (
+            0
+            if len(self.problems) == 1
+            else int(self.np_random.integers(len(self.problems)))
+        )
         self.case_index = index
         self.problem = self.problems[index]
         self.catalogue = self.catalogues[index]
@@ -88,7 +103,10 @@ class NetworkPPOEnv(gym.Env):
             np.array([dm.origin / max(n - 1, 1) for dm in p.demands]),
             np.array([dm.service / max(s - 1, 1) for dm in p.demands]),
             np.array([service.cpu for service in p.services]),
-            cpu, caps, p.arc_base_latencies, p.arc_latency_slopes,
+            cpu,
+            caps,
+            p.arc_base_latencies,
+            p.arc_latency_slopes,
             np.array([self.steps / self.episode_steps]),
         ]
         return np.concatenate(features).astype(np.float32)
@@ -106,7 +124,9 @@ class NetworkPPOEnv(gym.Env):
             demand, route = divmod(index - self.placement_actions, self.n_paths)
             trial.routes[demand] = route
         elif index < self.atomic_actions:
-            demand, sign = divmod(index - self.placement_actions - self.routing_actions, 2)
+            demand, sign = divmod(
+                index - self.placement_actions - self.routing_actions, 2
+            )
             trial.quantities[demand] += -1 if sign == 0 else 1
         else:
             demand, route = divmod(index - self.atomic_actions, self.n_paths)
@@ -122,15 +142,26 @@ class NetworkPPOEnv(gym.Env):
         if current > float(self.best_episode.quantities.sum()):
             self.best_episode = self.state.copy()
         if len(self.problems) == 1 and (
-            self.best_overall is None or current > float(self.best_overall.quantities.sum())
+            self.best_overall is None
+            or current > float(self.best_overall.quantities.sum())
         ):
             self.best_overall = self.state.copy()
         self.steps += 1
         truncated = self.steps >= self.episode_steps
-        reward = current - previous if current != previous else (-0.05 if not feasible else -0.01)
-        return self._observe(), float(reward), False, truncated, {
-            "instance_id": self.problem.id,
-            "feasible_action": bool(feasible),
-            "total_served_mbps": current,
-            "best_episode_mbps": float(self.best_episode.quantities.sum()),
-        }
+        reward = (
+            current - previous
+            if current != previous
+            else (-0.05 if not feasible else -0.01)
+        )
+        return (
+            self._observe(),
+            float(reward),
+            False,
+            truncated,
+            {
+                "instance_id": self.problem.id,
+                "feasible_action": bool(feasible),
+                "total_served_mbps": current,
+                "best_episode_mbps": float(self.best_episode.quantities.sum()),
+            },
+        )

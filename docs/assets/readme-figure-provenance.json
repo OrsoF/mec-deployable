@@ -6,8 +6,8 @@
     "instances/eval/bottleneck_unseen.json": "b211844aeaee8ac657c680e616bd33c4a0f962f9a0d9564f1c92242d25207266",
     "docs/temporal_benchmark_two_cases.csv": "361d7328c30a5d1194a238d236637bfa3607fe11fd387091cf7b8d7b56ce73aa",
     "docs/temporal_benchmark_two_cases_summary.json": "b304ec3c5efd63a3215fade06276f395d7a177961502a85e754ddb82da027368",
-    "docs/figures/generate.py": "db59b6b3813eae345ac87e981b255994ed79b47c3c89ed819fc853db5164da5f",
-    "docs/figures/readme_hero.py": "6d4bf754c13b14801550db84489caa41da3c370b4a2b237c9641be61cdc9305c"
+    "docs/figures/generate.py": "fe2bb44937ea55f865110a201decaa4fa9496ba27f8fe9a1596f9c5c78ee8ba6",
+    "docs/figures/readme_hero.py": "24b9216cdc817937ecd2816842e9f7cb4fa20f81719996690b27bbee788c5719"
   },
   "readme_illustration": {
     "method": "manually specified; not a PPO evaluation",

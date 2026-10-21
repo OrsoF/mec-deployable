@@ -1,13 +1,15 @@
 """Gymnasium contract tests. Skipped if optional runtime not installed locally."""
+
 import numpy as np
 import pytest
 
 gymnasium = pytest.importorskip("gymnasium")
 
+from pathlib import Path
+
+from network_ppo.constraints import assess
 from network_ppo.environment import NetworkPPOEnv
 from network_ppo.instance_io import load_instance
-from network_ppo.constraints import assess
-from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,7 +27,9 @@ def test_actions_preserve_feasibility_and_good_shape():
         assert env.observation_space.contains(obs)
         rng = np.random.default_rng(42)
         for _ in range(8):
-            o, reward, terminated, truncated, step_info = env.step(int(rng.integers(env.action_space.n)))
+            o, reward, terminated, truncated, step_info = env.step(
+                int(rng.integers(env.action_space.n))
+            )
             assert o.shape == obs.shape
             assert np.isfinite(reward)
             assert env.observation_space.contains(o)
@@ -57,8 +61,10 @@ def test_positive_throughput_action_reward():
         # Find one feasible +1 edit in the current min-Mbps starting point.
         q_base = env.placement_actions + env.routing_actions
         candidates = [q_base + 2 * d + 1 for d in range(len(env.problem.demands))]
-        assert any(assess(env.problem, _increment(env.state, d), env.catalogue).feasible
-                   for d in range(len(candidates)))
+        assert any(
+            assess(env.problem, _increment(env.state, d), env.catalogue).feasible
+            for d in range(len(candidates))
+        )
         for action in candidates:
             _, reward, _, _, info = env.step(action)
             if info["feasible_action"]:

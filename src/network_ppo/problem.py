@@ -1,4 +1,5 @@
 """Domain data for a small, fixed-topology network-orchestration problem."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -49,7 +50,11 @@ class Problem:
     @property
     def arcs(self) -> tuple[tuple[int, int], ...]:
         # Each undirected physical link provides two independently capacitated arcs.
-        return tuple(arc for e in self.links for arc in ((e.source, e.target), (e.target, e.source)))
+        return tuple(
+            arc
+            for e in self.links
+            for arc in ((e.source, e.target), (e.target, e.source))
+        )
 
     @property
     def signature(self) -> dict:
@@ -78,12 +83,15 @@ class Problem:
 @dataclass
 class Solution:
     """One chosen node per service, path index per demand, integer Mbps per demand."""
+
     placement: np.ndarray
     routes: np.ndarray
     quantities: np.ndarray
 
     def copy(self) -> "Solution":
-        return Solution(self.placement.copy(), self.routes.copy(), self.quantities.copy())
+        return Solution(
+            self.placement.copy(), self.routes.copy(), self.quantities.copy()
+        )
 
 
 def validate_compatible(problems: list[Problem], reference: dict | None = None) -> dict:
