@@ -1,4 +1,4 @@
-<h1 align="center">MEC Deployable</h1>
+<h1 align="center">Deployable Service Placement</h1>
 
 <p align="center">PPO-based service placement, routing, and bandwidth allocation for edge networks.</p>
 
