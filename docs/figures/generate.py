@@ -516,7 +516,7 @@ def experiment(rows, summary, methods, mobile=False):
             "xtick.color": GRAY,
             "ytick.color": NAVY,
             "svg.fonttype": "none",
-            "svg.hashsalt": "mec-deployable-figures",
+            "svg.hashsalt": "service-placement-deployable-figures",
             "figure.facecolor": "white",
             "axes.facecolor": "white",
         }
@@ -633,6 +633,17 @@ def experiment(rows, summary, methods, mobile=False):
             "Title": "Bounded MPC: reward and computational cost",
             "Description": "Recorded two-case comparison; no MPC reward advantage and no PPO performance claim.",
         },
+    )
+    # Matplotlib emits trailing spaces in path data; normalize saved text so
+    # regeneration also passes Git's whitespace check when SVG IDs change.
+    svg_path = ASSETS / f"{name}.svg"
+    svg_path.write_text(
+        "\n".join(
+            line.rstrip() for line in svg_path.read_text(encoding="utf-8").splitlines()
+        )
+        + "\n",
+        encoding="utf-8",
+        newline="\n",
     )
     if not mobile:
         fig.savefig(

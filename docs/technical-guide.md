@@ -1,4 +1,4 @@
-# MEC Deployable — Static engine and integration guide (v0.3)
+# Deployable Service Placement — Static engine and integration guide (v0.3)
 
 This guide covers the retained static engine. See [Temporal design](temporal-design.md) for the v0.3 temporal model, one-decision-per-period PPO, switching costs, causal beam MPC, and snapshot interface. The [README figures](figures/README.md) describe the verified examples and their source data.
 
@@ -56,15 +56,15 @@ API: `GET /health` returns process health; `GET /ready` gives selected strategy 
 ## Deployment
 
 ```bash
-docker build -t mec-deployable .
-docker run --rm -p 127.0.0.1:8080:8080 mec-deployable
+docker build -t service-placement-deployable .
+docker run --rm -p 127.0.0.1:8080:8080 service-placement-deployable
 ```
 
 To run the PPO model, build `--build-arg INSTALL_RL=true` and mount a **trusted** local checkpoint at `/app/outputs` read-only. Running `train.py` inside the RL Docker image is possible only if output directory is writable and the required scripts/data are present; saving a trained checkpoint is not performed by default. Container includes one application worker and does not include a reverse proxy.
 
 ```bash
-docker build --build-arg INSTALL_RL=true -t mec-deployable-rl .
-docker run --rm -p 127.0.0.1:8080:8080 -v "$(pwd)/outputs:/app/outputs:ro" mec-deployable-rl python serve.py --host 0.0.0.0 --strategy auto --checkpoint outputs/ppo_bottleneck
+docker build --build-arg INSTALL_RL=true -t service-placement-deployable-rl .
+docker run --rm -p 127.0.0.1:8080:8080 -v "$(pwd)/outputs:/app/outputs:ro" service-placement-deployable-rl python serve.py --host 0.0.0.0 --strategy auto --checkpoint outputs/ppo_bottleneck
 ```
 
 The mount syntax above uses a POSIX shell; use an absolute host path for Windows Docker. Docker build/runtime is not verified in the recorded local audit. The CLI accepts only a locally configured checkpoint; HTTP clients cannot select or upload one.

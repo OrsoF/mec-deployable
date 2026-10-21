@@ -3,7 +3,7 @@
 <p align="center">PPO-based service placement, routing, and bandwidth allocation for edge networks.</p>
 
 <p align="center">
-  <a href="https://github.com/OrsoF/mec-deployable/actions/workflows/ci.yml"><img src="https://github.com/OrsoF/mec-deployable/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/OrsoF/service-placement-deployable/actions/workflows/ci.yml"><img src="https://github.com/OrsoF/service-placement-deployable/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="pyproject.toml"><img src="https://img.shields.io/badge/Python-3.10%2B-2563a6" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-087f82" alt="MIT license"></a>
 </p>
@@ -14,7 +14,7 @@
   <a href="docs/technical-guide.md">Documentation</a>
 </p>
 
-Where should a service run, and how should traffic reach it? Edge nodes have limited computing resources, network links have limited bandwidth, and applications have latency requirements. **MEC Deployable uses Proximal Policy Optimization (PPO)** to learn how to place services, route traffic, and allocate bandwidth within these constraints.
+Where should a service run, and how should traffic reach it? Edge nodes have limited computing resources, network links have limited bandwidth, and applications have latency requirements. **Deployable Service Placement uses Proximal Policy Optimization (PPO)** to learn how to place services, route traffic, and allocate bandwidth within these constraints.
 
 <picture>
   <source media="(max-width: 600px)" srcset="docs/assets/ppo-placement-mobile.svg">
@@ -53,8 +53,8 @@ python eval.py --checkpoint outputs/ppo_bottleneck --output outputs/ppo_decision
 Serve the trained policy through the HTTP API:
 
 ```bash
-docker build --build-arg INSTALL_RL=true -t mec-deployable .
-docker run --rm -p 127.0.0.1:8080:8080 --mount "type=bind,source=$PWD/outputs,target=/app/outputs,readonly" mec-deployable python serve.py --host 0.0.0.0 --strategy ppo --checkpoint outputs/ppo_bottleneck
+docker build --build-arg INSTALL_RL=true -t service-placement-deployable .
+docker run --rm -p 127.0.0.1:8080:8080 --mount "type=bind,source=$PWD/outputs,target=/app/outputs,readonly" service-placement-deployable python serve.py --host 0.0.0.0 --strategy ppo --checkpoint outputs/ppo_bottleneck
 ```
 
 `POST /decide` accepts a network instance and returns placements, routes, allocated Mbps, and validation diagnostics. [Input format and deployment details](docs/technical-guide.md#input-and-output-contract).

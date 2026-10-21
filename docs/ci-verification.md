@@ -2,7 +2,7 @@
 
 ## Pre-push verification — 21 October 2026
 
-The hosted [CI run for commit `49527bd`](https://github.com/OrsoF/mec-deployable/actions/runs/39578497165)
+The hosted [CI run for commit `49527bd`](https://github.com/OrsoF/service-placement-deployable/actions/runs/39578497165)
 passed all three original jobs: `unit (3.10)`, `unit (3.12)`, and `rl-smoke`.
 The additional local changes below have not been pushed or checked by a new hosted run.
 
@@ -52,7 +52,7 @@ the hosted workflow runs on Ubuntu and must be rerun after the fixes are pushed.
 
 ## Hosted failure and fixes
 
-The [CI run on commit ee79378](https://github.com/OrsoF/mec-deployable/actions/runs/38581665477)
+The [CI run on commit ee79378](https://github.com/OrsoF/service-placement-deployable/actions/runs/38581665477)
 failed in both unit jobs and in static PPO training. `instances/train` contained
 20 JSON files, while the code and tests require exactly 10 compatible scenarios.
 The ten original `factory_*` training files had already been copied into

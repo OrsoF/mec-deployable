@@ -1,3 +1,3 @@
-"""Standalone PPO network-orchestration core (no mecbench dependency)."""
+"""Standalone PPO network-orchestration core."""
 
 __version__ = "0.1.0"

@@ -2,7 +2,7 @@
 
 ## Project purpose
 
-`mec-deployable` presents PPO-based service placement, routing and bandwidth
+`service-placement-deployable` presents PPO-based service placement, routing and bandwidth
 allocation, with feasibility validation and CLI/HTTP deployment interfaces.
 Its public presentation should emphasize how a trained policy is integrated and
 used to generate network decisions. Comparative solver benchmarking belongs in
